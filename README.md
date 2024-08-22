@@ -17,3 +17,7 @@ La versión [sistema_veterinaria_final](https://github.com/ErikJhonatan/sistema_
 El README anterior indicaba instalar dependencias con `composer install` y `npm install`, ejecutar migraciones, cargar `database/banco/data.sql`, ejecutar `php artisan app:variaciones-historia-clinica` y arrancar `php artisan serve` junto con `npm run dev`. Revisa la configuración local y el contenido de los SQL antes de usar ese flujo.
 
 Esta revisión no ejecutó la aplicación, migraciones ni pruebas.
+
+## Cambios de comportamiento
+
+La eliminación de eventos usa un formulario DELETE con CSRF; el antiguo GET ya no elimina datos. `comprobantes.pdf` conserva la URL canónica; la URL anterior usa `comprobantes.pdf.legacy`.

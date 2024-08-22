@@ -81,7 +81,7 @@ Route::middleware(['auth'])->group(function () {
     //Route::resource('/evento', EventoController::class);
     Route::get('/evento', [EventoController::class, 'index'])->middleware(['auth', 'verified']);
     Route::get('/evento/list', [EventoController::class, 'list'])->middleware(['auth', 'verified']);
-    Route::get('/evento/destroy/{id}', [EventoController::class, 'destroy'])->name('evento.destroy')->middleware(['auth', 'verified']);
+    Route::delete('/evento/destroy/{id}', [EventoController::class, 'destroy'])->name('evento.destroy')->middleware(['auth', 'verified']);
 
     Route::resource('/formaPago', FormaPagoController::class);
     Route::resource('/linea', LineaController::class);
@@ -109,10 +109,10 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/graficos-ventas', [VentasController::class, 'graficos']);
 
-    Route::get('/comprobantes/generar-pdf/{comprobante_id}', [ComprobantesController::class, 'pdf'])->name('comprobantes.pdf')->middleware('auth', 'verified');
+    Route::get('/comprobantes/generar-pdf/{comprobante_id}', [ComprobantesController::class, 'pdf'])->name('comprobantes.pdf.legacy')->middleware(['auth', 'verified']);
     Route::get('/comprobantes/{comprobante_id}/pdf', [ComprobantesController::class, 'pdf'])->name('comprobantes.pdf');
-    Route::post('/comprobantes/agregar-pago', [ComprobantesController::class, 'ajax'])->name('comprobantes.ajax')->middleware('auth', 'verified');
-    Route::post('/stocks/agregar-stock', [StocksController::class, 'ajax'])->name('stocks.ajax')->middleware('auth', 'verified');
+    Route::post('/comprobantes/agregar-pago', [ComprobantesController::class, 'ajax'])->name('comprobantes.ajax')->middleware(['auth', 'verified']);
+    Route::post('/stocks/agregar-stock', [StocksController::class, 'ajax'])->name('stocks.ajax')->middleware(['auth', 'verified']);
 
     Route::get('/getProvincias/{Depto}',[ClienteController::class,'getProvincias'])->middleware(['auth', 'verified']);
     Route::get('/getDistritos/{Prov}',[ClienteController::class,'getDistritos'])->middleware(['auth', 'verified']);
