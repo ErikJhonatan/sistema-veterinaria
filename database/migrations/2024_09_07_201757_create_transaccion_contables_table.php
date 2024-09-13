@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->date('fecha');
             $table->string('tipo_transaccion');
+            $table->string('metodo_pago');
             $table->string('descripcion');
             $table->foreignId('cuenta_debito_id')->constrained('cuenta_contables');
             $table->foreignId('cuenta_credito_id')->constrained('cuenta_contables');

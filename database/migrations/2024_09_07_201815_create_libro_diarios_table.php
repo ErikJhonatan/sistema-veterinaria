@@ -18,7 +18,7 @@ return new class extends Migration
             $table->decimal('haber', 10, 2)->default(0);
             $table->string('concepto');
             $table->foreignId('cuenta_contable_id')->constrained('cuenta_contables');
-            $table->foreignId('transaccion_contable_id')->constrained('transaccion_contables');
+            $table->foreignId('transaccion_contable_id')->constrained('transaccion_contables')->onDelete('cascade');
             $table->timestamps();
         });
     }
