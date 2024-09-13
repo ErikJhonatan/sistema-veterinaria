@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('equipo_contables', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('transaccion_id')->constrained('transaccion_contables');
+            $table->foreignId('transaccion_id')->constrained('transaccion_contables')->onDelete('cascade');
             $table->string('nombre');
             $table->string('descripcion');
             $table->string('marca');

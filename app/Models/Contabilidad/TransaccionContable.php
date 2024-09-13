@@ -12,9 +12,11 @@ class TransaccionContable extends Model
     protected $fillable = [
         'fecha',
         'tipo_transaccion',
+        'tipo',
+        'metodo_pago',
+        'descripcion',
         'cuenta_debito_id',
         'cuenta_credito_id',
-        'monto',
-        'descripcion',
+        'monto'
     ];
 }
