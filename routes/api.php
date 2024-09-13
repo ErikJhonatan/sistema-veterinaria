@@ -14,6 +14,10 @@ use App\Http\Controllers\ProductoGaleriaController;
 use App\Http\Controllers\RolController;
 use App\Http\Controllers\TratamientoMascotaController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\TransaccionContable\CapitalController;
+use App\Http\Controllers\TransaccionContable\CompraController;
+use App\Http\Controllers\TransaccionContable\GastoController;
+use App\Http\Controllers\TransaccionContable\IngresoController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -92,6 +96,9 @@ Route::prefix('permisos')->group(function () {
     Route::get('', [PermisoController::class, 'findAll']);
 });
 
-
-
-
+Route::prefix('contabilidad')->group(function () {
+    Route::apiResource('capital', CapitalController::class);
+    Route::apiResource('gasto', GastoController::class);
+    Route::apiResource('ingreso', IngresoController::class);
+    Route::apiResource('compra', CompraController::class);
+});

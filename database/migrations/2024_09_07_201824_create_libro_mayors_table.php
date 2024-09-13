@@ -19,8 +19,8 @@ return new class extends Migration
             $table->decimal('saldo_deudor', 10, 2)->default(0);
             $table->decimal('saldo_acreedor', 10, 2)->default(0);
             $table->foreignId('cuenta_contable_id')->constrained('cuenta_contables');
-            $table->foreignId('transaccion_contable_id')->constrained('transaccion_contables');
-            $table->foreignId('libro_diario_id')->constrained('libro_diarios');
+            $table->foreignId('transaccion_contable_id')->constrained('transaccion_contables')->onDelete('cascade');
+            $table->foreignId('libro_diario_id')->constrained('libro_diarios')->onDelete('cascade');
             $table->timestamps();
         });
     }
