@@ -185,7 +185,7 @@ class TransaccionContableService
                 return TransaccionContable::where('tipo_transaccion', 'capital')->whereYear('fecha', $year)->get();
                 // ingreso_venta, ingreso_servicio
             case 'ingreso':
-               return TransaccionContable::where('tipo_transaccion', 'ingreso_venta')->orWhere('tipo', 'ingreso_servicio')->whereYear('fecha', $year)->get();
+               return TransaccionContable::where('tipo_transaccion', 'ingreso_venta')->orWhere('tipo_transaccion', 'ingreso_servicio')->whereYear('fecha', $year)->get();
             case 'gasto':
                return TransaccionContable::where('tipo_transaccion', 'gasto')->whereYear('fecha', $year)->get();
             case 'compra':

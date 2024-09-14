@@ -24,7 +24,7 @@ class IngresoController extends Controller
         $validatedData = $request->validate([
             'anio' => 'required|integer|min:2024',
         ]);
-        return $this->transaccionContableService->obtenerTransaccionesContables('ingreso', $validatedData['year']);
+        return $this->transaccionContableService->obtenerTransaccionesContables('ingreso', $validatedData['anio']);
     }
 
     public function store(IngresoStoreRequest $request)
