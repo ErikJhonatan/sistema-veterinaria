@@ -41,7 +41,7 @@ class GastoController extends Controller
 
         if ('gasto_servicio' == $dataValitated['tipo_transaccion']) {
             $dataValitated['cuenta_debito_id'] = $this->transaccionContableService->buscarCuentaPorCodigo(
-                CuentaContable::SERVICIOS[$dataValitated['servicio']]
+                CuentaContable::CUENTAS_GASTOS_SERVICIOS[$dataValitated['servicio']]
             )->id;
         } else if ('gasto_personal' == $dataValitated['tipo_transaccion']) {
             $dataValitated['cuenta_debito_id'] = $this->transaccionContableService->buscarCuentaPorCodigo(
@@ -82,8 +82,8 @@ class GastoController extends Controller
     }
 
     public function update(UpdateTransactionRequest $request, $id)
-    {        
-        $transaccion = $this->transaccionContableService->buscarTransaccion($request->input('idGasto'));        
+    {
+        $transaccion = $this->transaccionContableService->buscarTransaccion($request->input('idGasto'));
         if (!$transaccion) {
             return $this->transaccionContableService->transaccionContableNoEncontrada();
         }
