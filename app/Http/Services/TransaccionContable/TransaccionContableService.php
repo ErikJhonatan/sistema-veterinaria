@@ -142,7 +142,7 @@ class TransaccionContableService
     }
 
     public function saldoInsuficiente()
-    {        
+    {
         return response(['message' => 'Saldo insuficiente'], 400);
     }
 
@@ -187,7 +187,7 @@ class TransaccionContableService
             case 'ingreso':
                return TransaccionContable::where('tipo_transaccion', 'ingreso_venta')->orWhere('tipo_transaccion', 'ingreso_servicio')->whereYear('fecha', $year)->get();
             case 'gasto':
-               return TransaccionContable::where('tipo_transaccion', 'gasto')->whereYear('fecha', $year)->get();
+               return TransaccionContable::where('tipo_transaccion', 'gasto_personal')->orWhere('tipo_transaccion', 'gasto_servicio')->whereYear('fecha', $year)->get();
             case 'compra':
                return TransaccionContable::where('tipo_transaccion', 'compra')->whereYear('fecha', $year)->get();
             case 'maquinaria':
