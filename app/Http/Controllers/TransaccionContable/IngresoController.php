@@ -19,13 +19,16 @@ class IngresoController extends Controller
         $this->transaccionContableService = $transaccionContableService;
     }
 
-    public function index(Request $request)
-    {
-        $validatedData = $request->validate([
-            'anio' => 'required|integer|min:2024',
-        ]);
-        return $this->transaccionContableService->obtenerTransaccionesContables('ingreso', $validatedData['anio']);
-    }
+    public function index()
+{
+    // $validatedData = $request->validate([
+    //     'anio' => 'required|integer|min:2024',
+    // ]);
+
+    $transacciones = $this->transaccionContableService->obtenerTransaccionesContables('ingreso', 2024);
+
+    return view('contabilidad.ingresos.index', ['transacciones' => $transacciones]);
+}
 
     public function store(IngresoStoreRequest $request)
     {
@@ -57,7 +60,8 @@ class IngresoController extends Controller
                 CuentaContable::SERVICIOS
             )->id;
         }
-        return $this->transaccionContableService->crearTransaccionContable($dataValitated);
+        $this->transaccionContableService->crearTransaccionContable($dataValitated);
+        return redirect()->route('ingresos.index')->with('msg', 'Ingreso creado correctamente.');
     }
 
     public function show($id)
@@ -73,7 +77,9 @@ class IngresoController extends Controller
 
     public function update(UpdateTransactionRequest $request, $id)
     {
-        $transaccion = $this->transaccionContableService->buscarTransaccion($id);
+        // dd($request->request);
+        // $transaccion = $this->transaccionContableService->buscarTransaccion($id);
+        $transaccion = $this->transaccionContableService->buscarTransaccion($request->input('idIngreso'));
 
         if (!$transaccion) {
             return $this->transaccionContableService->transaccionContableNoEncontrada();
@@ -81,7 +87,8 @@ class IngresoController extends Controller
 
         $dataValitated = $request->validated();
         $dataValitated['descripcion'] = $dataValitated['concepto'];
-        return $this->transaccionContableService->actualizarTransaccionContable($transaccion, $dataValitated);
+        $this->transaccionContableService->actualizarTransaccionContable($transaccion, $dataValitated);
+        return redirect()->route('ingresos.index')->with('msg', 'Ingreso actualizado correctamente.');
     }
 
     public function destroy($id)
@@ -92,6 +99,8 @@ class IngresoController extends Controller
             return $this->transaccionContableService->transaccionContableNoEncontrada();
         }
 
-        return $this->transaccionContableService->eliminarTransaccionContable($transaccion);
+        $this->transaccionContableService->eliminarTransaccionContable($transaccion);
+
+        return redirect()->back()->with('msg', 'Ingreso eliminado correctamente.');
     }
 }

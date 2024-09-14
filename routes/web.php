@@ -29,6 +29,10 @@ use App\Http\Controllers\RolController;
 use App\Http\Controllers\StocksController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CuadrarCajaController;
+use App\Http\Controllers\TransaccionContable\IngresoController;
+use App\Http\Controllers\TransaccionContable\CompraController;
+use App\Http\Controllers\TransaccionContable\GastoController;
+use App\Http\Controllers\TransaccionContable\CapitalController;
 use App\Http\Services\PermisoService;
 use Illuminate\Support\Facades\Auth;
 
@@ -116,6 +120,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/clienteGraf',[ClienteController::class,'getGrafico'])->middleware(['auth', 'verified']);
     Route::get('/mascotaGraf',[MascotaController::class,'getGrafico'])->middleware(['auth', 'verified']);
 
+    Route::resource('/ingresos', IngresoController::class);    
+    Route::resource('/compras', CompraController::class);
+    Route::resource('/gastos', GastoController::class);
+    Route::resource('/capital', CapitalController::class);    
 });
 
 require __DIR__.'/auth.php';

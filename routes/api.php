@@ -95,10 +95,3 @@ Route::prefix('permisos-roles')->group(function () {
 Route::prefix('permisos')->group(function () {
     Route::get('', [PermisoController::class, 'findAll']);
 });
-
-Route::prefix('contabilidad')->group(function () {
-    Route::apiResource('capital', CapitalController::class);
-    Route::apiResource('gasto', GastoController::class);
-    Route::apiResource('ingreso', IngresoController::class);
-    Route::apiResource('compra', CompraController::class);
-});
