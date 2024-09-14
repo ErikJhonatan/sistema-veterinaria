@@ -23,6 +23,7 @@ class UpdateTransactionRequest extends FormRequest
     {
         return [
             // fecha antes de o igual a la fecha actual
+            'anio' => 'required|integer|min:2024',
             'fecha' => 'required|date|before_or_equal:now',
             'monto' => 'required|numeric|min:0.01',
             'concepto' => 'required|string'
