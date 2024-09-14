@@ -1,9 +1,9 @@
 @extends('adminlte::page')
 
-@section('title', 'Consultorio veterinario SOS | Ingresos')
+@section('title', 'Consultorio veterinario SOS | Gastos')
 
 @php
-  $heads = ['Fecha Registro', 'ID', 'Tipo', 'Método de Pago' ,'Concepto', 'Monto', 'Acciones'];
+  $heads = ['Fecha Registro', 'ID', 'Tipo', 'Método de Pago', 'Concepto', 'Monto', 'Acciones'];
   $config = [
       'language' => [
           'url' => '//cdn.datatables.net/plug-ins/2.0.1/i18n/es-ES.json',
@@ -14,13 +14,13 @@
 @endphp
 
 @section('content_header')
-  <h1 class="m-0 text-dark"><i class="fas fa-fw fa-coins"></i> Ingresos</h1>
+  <h1 class="m-0 text-dark"><i class="fas fa-fw fa-file-invoice-dollar"></i> Gastos</h1>
 @stop
 
 @section('content')
   <div class="card card-primary">
     <div class="card-header">
-      <h3 class="card-title">Listado de Ingresos</h3>
+      <h3 class="card-title">Listado de Gastos</h3>
     </div>
     <div class="card-body">
       @if (session('msg'))
@@ -37,7 +37,7 @@
       <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
         <div class="btn-group mr-2" role="group" aria-label="Third group">
           <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#ModalNew"
-            title="Nuevo Ingreso">Registrar Ingreso</button>
+            title="Nuevo Gasto">Registrar Gasto</button>
         </div>
       </div>
 
@@ -56,7 +56,7 @@
             <tr>
               <td>{{ \Carbon\Carbon::parse($trans->created_at)->format('Y-m-d H:i:s') }}</td>
               <td>
-                Ingreso #{{ $ingreso_referencia }}
+                Gasto #{{ $ingreso_referencia }}
               </td>
               <td>
                 {{ $trans->tipo_transaccion }}
@@ -96,12 +96,12 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content">
             <div class="modal-header bg-warning">
-              <h5 class="modal-title" id="exampleModalCenterTitle">Registrar Nuevo Ingreso</h5>
+              <h5 class="modal-title" id="exampleModalCenterTitle">Registrar Nuevo Gasto</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <form action="{{ url('ingresos') }}" method="post">
+            <form action="{{ url('gastos') }}" method="post">
               @csrf
               <div class="modal-body">
                 {{-- Fecha --}}
@@ -116,17 +116,47 @@
                   </div>
                 </div>
 
-                {{-- Tipo de Ingreso --}}
+                {{-- Año --}}
                 <div class="form-group">
-                  <label class="form-label" for="tipo_transaccion">Tipo de Ingreso</label>
+                  <label class="form-label" for="anio">Año</label>
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                    </div>
+                    <input id="anio" type="text" class="form-control form-control-sm" name="anio" required>
+                  </div>
+                </div>
+
+                {{-- Tipo de Gasto --}}
+                <div class="form-group">
+                  <label class="form-label" for="tipo_transaccion">Tipo de Gasto</label>
                   <div class="input-group mb-3">
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="fas fa-fw fa-credit-card"></i></span>
                     </div>
                     <select class="form-control form-control-sm" id="tipo_transaccion" name="tipo_transaccion" required>
-                      <option value="" disabled selected>* Tipo de Ingreso...</option>
-                      <option value="ingreso_venta">Ingreso por venta</option>
-                      <option value="ingreso_servicio">Ingreso por servicio</option>
+                      <option value="" disabled selected>* Tipo de Gasto...</option>
+                      <option value="gasto_personal">Gasto Personal</option>
+                      <option value="gasto_servicio">Gasto por servicio</option>
+                    </select>
+                  </div>
+                </div>
+
+                {{-- Tipo de Gasto --}}
+                <div class="form-group">
+                  <label class="form-label" for="servicio">Servicio</label>
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="fas fa-fw fa-credit-card"></i></span>
+                    </div>
+                    <select class="form-control form-control-sm" id="servicio" name="servicio" required>
+                      <option value="" disabled selected>* Servicio...</option>
+                      <option value="luz">Luz</option>
+                      <option value="agua">Agua</option>
+                      <option value="internet">Internet</option>
+                      <option value="alquiler">Alquiler</option>
+                      <option value="maquinaria">Maquinaria</option>
+                      <option value="equipo">Equipo</option>                      
                     </select>
                   </div>
                 </div>
@@ -191,19 +221,19 @@
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <form action="{{ url('ingresos/1') }}" method="post">
+            <form action="{{ url('gastos/1') }}" method="post">
               @method('PUT')
               @csrf
-              <div class="modal-body">                
+              <div class="modal-body">
                 {{-- ID --}}
                 <div class="form-group">
-                  <label class="form-label" for="idIngreso">ID</label>
+                  <label class="form-label" for="idGasto">ID</label>
                   <div class="input-group mb-3">
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="fas fa-calendar-alt"></i>
                     </div>
-                    <input type="text" class="form-control form-control-sm" id="idIngreso" name="idIngreso"
-                      value="" placeholder="idIngreso" readonly>
+                    <input type="text" class="form-control form-control-sm" id="idGasto" name="idGasto"
+                      value="" placeholder="idGasto" readonly>
                   </div>
                 </div>
 
@@ -263,7 +293,7 @@
 @push('js')
   <script>
     function obtenerInfoEdi(id, fecha, descripcion, monto) {
-      $('#idIngreso').val(id);
+      $('#idGasto').val(id);
       $('#fecha').val(fecha);
       $('#conceptoEdit').val(descripcion);
       $('#montoEdit').val(monto);
@@ -288,6 +318,12 @@
       $("#success-alert").fadeTo(2000, 500).slideUp(500, function() {
         $("#success-alert").slideUp(500);
       });
+    });
+
+    document.getElementById('fecha').addEventListener('change', function() {
+      const fecha = new Date(this.value);
+      const anio = fecha.getFullYear();
+      document.getElementById('anio').value = anio;
     });
   </script>
 
