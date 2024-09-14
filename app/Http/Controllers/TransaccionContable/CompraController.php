@@ -93,11 +93,11 @@ class CompraController extends Controller
 
         if('efectivo' == $metodo_pago)
         {
-            $saldo = $this->transaccionContableService->obtenerSaldoCaja($transaccion->anio);
+            $saldo = $this->transaccionContableService->obtenerSaldoCaja($dataValitated['anio']);
         }
         else if('transferencia' == $metodo_pago)
         {
-            $saldo = $this->transaccionContableService->obtenerSaldoBanco($transaccion->anio);
+            $saldo = $this->transaccionContableService->obtenerSaldoBanco($dataValitated['anio']);
         }
 
         if(isset($dataValitated['monto']) && $saldo < $dataValitated['monto'])
