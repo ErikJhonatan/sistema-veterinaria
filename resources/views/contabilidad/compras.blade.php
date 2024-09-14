@@ -123,7 +123,7 @@
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="fas fa-calendar"></i></span>
                     </div>
-                    <input id="anio" type="text" class="form-control form-control-sm" name="anio" required>
+                    <input id="anio" type="text" class="form-control form-control-sm" name="anio" required readonly>
                   </div>
                 </div>
 
