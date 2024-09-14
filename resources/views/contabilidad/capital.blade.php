@@ -1,9 +1,9 @@
 @extends('adminlte::page')
 
-@section('title', 'Consultorio veterinario SOS | Gastos')
+@section('title', 'Consultorio veterinario SOS | Capital')
 
 @php
-  $heads = ['Fecha Registro', 'ID', 'Tipo', 'Método de Pago', 'Concepto', 'Monto', 'Acciones'];
+  $heads = ['Fecha Registro', 'ID', 'Tipo', 'Método de Pago' ,'Concepto', 'Monto', 'Acciones'];
   $config = [
       'language' => [
           'url' => '//cdn.datatables.net/plug-ins/2.0.1/i18n/es-ES.json',
@@ -14,13 +14,13 @@
 @endphp
 
 @section('content_header')
-  <h1 class="m-0 text-dark"><i class="fas fa-fw fa-file-invoice-dollar"></i> Gastos</h1>
+  <h1 class="m-0 text-dark"><i class="fas fa-fw fa-coins"></i> Capital</h1>
 @stop
 
 @section('content')
   <div class="card card-primary">
     <div class="card-header">
-      <h3 class="card-title">Listado de Gastos</h3>
+      <h3 class="card-title">Listado de Capital</h3>
     </div>
     <div class="card-body">
       @if (session('msg'))
@@ -37,7 +37,7 @@
       <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
         <div class="btn-group mr-2" role="group" aria-label="Third group">
           <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#ModalNew"
-            title="Nuevo Gasto">Registrar Gasto</button>
+            title="Nuevo Capital">Registrar Capital</button>
         </div>
       </div>
 
@@ -56,7 +56,7 @@
             <tr>
               <td>{{ \Carbon\Carbon::parse($trans->created_at)->format('Y-m-d H:i:s') }}</td>
               <td>
-                Gasto #{{ $ingreso_referencia }}
+                Capital #{{ $ingreso_referencia }}
               </td>
               <td>
                 {{ $trans->tipo_transaccion }}
@@ -75,7 +75,7 @@
                   data-target="#ModalEdit" title="Editar Categoria"
                   onclick="obtenerInfoEdi('{{ $trans->id }}', '{{ $trans->fecha }}', '{{ $trans->descripcion }}', '{{ $trans->monto }}')"><i
                     class="fa fa-lg fa-fw fa-pen"></i></button>
-                <form action="{{ route('ingresos.destroy', $trans->id) }}" method="post" class="form">
+                <form action="{{ route('capital.destroy', $trans->id) }}" method="post" class="form">
                   <button type="submit" class="eliminar-venta delete btn btn-xs btn-default text-danger mx-1 shadow"
                     title="Eliminar venta {{ $ingreso_referencia }}" data-referencia="{{ $ingreso_referencia }}">
                     <i class="fa fa-lg fa-fw fa-trash"></i>
@@ -96,12 +96,12 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content">
             <div class="modal-header bg-warning">
-              <h5 class="modal-title" id="exampleModalCenterTitle">Registrar Nuevo Gasto</h5>
+              <h5 class="modal-title" id="exampleModalCenterTitle">Registrar Nuevo Capital</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <form action="{{ url('gastos') }}" method="post">
+            <form action="{{ url('capital') }}" method="post">
               @csrf
               <div class="modal-body">
                 {{-- Fecha --}}
@@ -114,52 +114,7 @@
                     <input id="fecha" type="datetime-local" class="form-control form-control-sm" id="fecha"
                       name="fecha" required value="{{ now()->format('Y-m-d\TH:i') }}">
                   </div>
-                </div>
-
-                {{-- Año --}}
-                <div class="form-group">
-                  <label class="form-label" for="anio">Año</label>
-                  <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text"><i class="fas fa-calendar"></i></span>
-                    </div>
-                    <input id="anio" type="text" class="form-control form-control-sm" name="anio" required readonly>
-                  </div>
-                </div>
-
-                {{-- Tipo de Gasto --}}
-                <div class="form-group">
-                  <label class="form-label" for="tipo_transaccion">Tipo de Gasto</label>
-                  <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text"><i class="fas fa-fw fa-credit-card"></i></span>
-                    </div>
-                    <select class="form-control form-control-sm" id="tipo_transaccion" name="tipo_transaccion" required>
-                      <option value="" disabled selected>* Tipo de Gasto...</option>
-                      <option value="gasto_personal">Gasto Personal</option>
-                      <option value="gasto_servicio">Gasto por servicio</option>
-                    </select>
-                  </div>
-                </div>
-
-                {{-- Tipo de Gasto --}}
-                <div class="form-group">
-                  <label class="form-label" for="servicio">Servicio</label>
-                  <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text"><i class="fas fa-fw fa-credit-card"></i></span>
-                    </div>
-                    <select class="form-control form-control-sm" id="servicio" name="servicio" required>
-                      <option value="" disabled selected>* Servicio...</option>
-                      <option value="luz">Luz</option>
-                      <option value="agua">Agua</option>
-                      <option value="internet">Internet</option>
-                      <option value="alquiler">Alquiler</option>
-                      <option value="maquinaria">Maquinaria</option>
-                      <option value="equipo">Equipo</option>                      
-                    </select>
-                  </div>
-                </div>
+                </div>                
 
                 {{-- Forma de Pago --}}
                 <div class="form-group">
@@ -221,19 +176,19 @@
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <form action="{{ url('gastos/1') }}" method="post">
+            <form action="{{ url('capital/1') }}" method="post">
               @method('PUT')
               @csrf
-              <div class="modal-body">
+              <div class="modal-body">                
                 {{-- ID --}}
                 <div class="form-group">
-                  <label class="form-label" for="idGasto">ID</label>
+                  <label class="form-label" for="idCapital">ID</label>
                   <div class="input-group mb-3">
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="fas fa-calendar-alt"></i>
                     </div>
-                    <input type="text" class="form-control form-control-sm" id="idGasto" name="idGasto"
-                      value="" placeholder="idGasto" readonly>
+                    <input type="text" class="form-control form-control-sm" id="idCapital" name="idCapital"
+                      value="" placeholder="idCapital" readonly>
                   </div>
                 </div>
 
@@ -293,7 +248,7 @@
 @push('js')
   <script>
     function obtenerInfoEdi(id, fecha, descripcion, monto) {
-      $('#idGasto').val(id);
+      $('#idCapital').val(id);
       $('#fecha').val(fecha);
       $('#conceptoEdit').val(descripcion);
       $('#montoEdit').val(monto);
@@ -318,20 +273,6 @@
       $("#success-alert").fadeTo(2000, 500).slideUp(500, function() {
         $("#success-alert").slideUp(500);
       });
-
-      $('#tipo_transaccion').on('change', function() {
-        if (this.value === 'gasto_personal') {
-          $('#servicio').prop('disabled', true).prop('required', false).val('');
-        } else if (this.value === 'gasto_servicio') {
-          $('#servicio').prop('disabled', false).prop('required', true);
-        }
-      });
-    });
-
-    document.getElementById('fecha').addEventListener('change', function() {
-      const fecha = new Date(this.value);
-      const anio = fecha.getFullYear();
-      document.getElementById('anio').value = anio;
     });
   </script>
 

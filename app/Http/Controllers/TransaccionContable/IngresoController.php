@@ -52,6 +52,7 @@ class IngresoController extends Controller
                 CuentaContable::SERVICIOS
             )->id;
         }
+        
         $this->transaccionContableService->crearTransaccionContable($dataValitated);
         return redirect()->route('ingresos.index')->with('msg', 'Ingreso registrado correctamente.');
     }

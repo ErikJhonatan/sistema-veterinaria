@@ -5,7 +5,7 @@ namespace App\Http\Controllers\TransaccionContable;
 use App\Http\Controllers\Controller;
 use App\Models\Contabilidad\CuentaContable;
 use Illuminate\Http\Request;
-USE App\Http\Requests\Contabilidad\CapitalStoreRequest;
+use App\Http\Requests\Contabilidad\CapitalStoreRequest;
 use App\Http\Requests\Contabilidad\UpdateTransactionRequest;
 use App\Http\Services\TransaccionContable\TransaccionContableService;
 
@@ -20,25 +20,24 @@ class CapitalController extends Controller
 
     public function index(Request $request)
     {
-        $validatedData = $request->validate([
-            'anio' => 'required|integer|min:2024',
-        ]);
-        return $this->transaccionContableService->obtenerTransaccionesContables('capital', $validatedData['anio']);
+        // $validatedData = $request->validate([
+        //     'anio' => 'required|integer|min:2024',
+        // ]);
+        $transacciones = $this->transaccionContableService->obtenerTransaccionesContables('capital', 2024);
+        return view('contabilidad.capital', ['transacciones' => $transacciones]);
     }
+
     public function store(CapitalStoreRequest $request)
     {
         $dataValitated = $request->validated();
         $dataValitated['tipo_transaccion'] = 'capital';
         $dataValitated['metodo_pago'] = $dataValitated['forma_pago'];
         $dataValitated['descripcion'] = $dataValitated['concepto'];
-        if('efectivo' == $dataValitated['forma_pago'])
-        {
+        if ('efectivo' == $dataValitated['forma_pago']) {
             $dataValitated['cuenta_debito_id'] = $this->transaccionContableService->buscarCuentaPorCodigo(
                 CuentaContable::CAJA
             )->id;
-        }
-        else if('transferencia' == $dataValitated['forma_pago'])
-        {
+        } else if ('transferencia' == $dataValitated['forma_pago']) {
             $dataValitated['cuenta_debito_id'] = $this->transaccionContableService->buscarCuentaPorCodigo(
                 CuentaContable::BANCOS
             )->id;
@@ -48,8 +47,8 @@ class CapitalController extends Controller
             CuentaContable::CAPITAL
         )->id;
 
-
-        return $this->transaccionContableService->crearTransaccionContable($dataValitated);
+        $this->transaccionContableService->crearTransaccionContable($dataValitated);
+        return redirect()->route('capital.index')->with('msg', 'Capital registrado correctamente.');
     }
 
     public function show($id)
@@ -64,8 +63,8 @@ class CapitalController extends Controller
     }
 
     public function update(UpdateTransactionRequest $request, $id)
-    {
-        $transaccion = $this->transaccionContableService->buscarTransaccion($id);
+    {        
+        $transaccion = $this->transaccionContableService->buscarTransaccion($request->input('idCapital'));
 
         if (!$transaccion) {
             return $this->transaccionContableService->transaccionContableNoEncontrada();
@@ -73,7 +72,8 @@ class CapitalController extends Controller
 
         $dataValitated = $request->validated();
         $dataValitated['descripcion'] = $dataValitated['concepto'];
-        return $this->transaccionContableService->actualizarTransaccionContable($transaccion, $dataValitated);
+        $this->transaccionContableService->actualizarTransaccionContable($transaccion, $dataValitated);
+        return redirect()->route('capital.index')->with('msg', 'Capital actualizado correctamente.');
     }
 
     public function destroy($id)
@@ -83,7 +83,7 @@ class CapitalController extends Controller
         if (!$transaccion) {
             return $this->transaccionContableService->transaccionContableNoEncontrada();
         }
-
-        return $this->transaccionContableService->eliminarTransaccionContable($transaccion);
+        $this->transaccionContableService->eliminarTransaccionContable($transaccion);
+        return redirect()->back()->with('msg', 'Capital eliminado correctamente.');
     }
 }
