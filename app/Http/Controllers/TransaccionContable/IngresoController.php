@@ -20,48 +20,40 @@ class IngresoController extends Controller
     }
 
     public function index()
-{
-    // $validatedData = $request->validate([
-    //     'anio' => 'required|integer|min:2024',
-    // ]);
-
-    $transacciones = $this->transaccionContableService->obtenerTransaccionesContables('ingreso', 2024);
-
-    return view('contabilidad.ingresos.index', ['transacciones' => $transacciones]);
-}
+    {
+        // $validatedData = $request->validate([
+        //     'anio' => 'required|integer|min:2024',
+        // ]);
+        $transacciones = $this->transaccionContableService->obtenerTransaccionesContables('ingreso', 2024);
+        return view('contabilidad.ingresos', ['transacciones' => $transacciones]);
+    }
 
     public function store(IngresoStoreRequest $request)
     {
         $dataValitated = $request->validated();
         $dataValitated['metodo_pago'] = $dataValitated['forma_pago'];
         $dataValitated['descripcion'] = $dataValitated['concepto'];
-        if('efectivo' == $dataValitated['forma_pago'])
-        {
+        if ('efectivo' == $dataValitated['forma_pago']) {
             $dataValitated['cuenta_debito_id'] = $this->transaccionContableService->buscarCuentaPorCodigo(
                 CuentaContable::CAJA
             )->id;
-        }
-        else if('transferencia' == $dataValitated['forma_pago'])
-        {
+        } else if ('transferencia' == $dataValitated['forma_pago']) {
             $dataValitated['cuenta_debito_id'] = $this->transaccionContableService->buscarCuentaPorCodigo(
                 CuentaContable::BANCOS
             )->id;
         }
 
-        if('ingreso_venta' == $dataValitated['tipo_transaccion'])
-        {
+        if ('ingreso_venta' == $dataValitated['tipo_transaccion']) {
             $dataValitated['cuenta_credito_id'] = $this->transaccionContableService->buscarCuentaPorCodigo(
                 CuentaContable::VENTA_MERCADERIA_MANUFACTURADA
             )->id;
-        }
-        else if('ingreso_servicio' == $dataValitated['tipo_transaccion'])
-        {
+        } else if ('ingreso_servicio' == $dataValitated['tipo_transaccion']) {
             $dataValitated['cuenta_credito_id'] = $this->transaccionContableService->buscarCuentaPorCodigo(
                 CuentaContable::SERVICIOS
             )->id;
         }
         $this->transaccionContableService->crearTransaccionContable($dataValitated);
-        return redirect()->route('ingresos.index')->with('msg', 'Ingreso creado correctamente.');
+        return redirect()->route('ingresos.index')->with('msg', 'Ingreso registrado correctamente.');
     }
 
     public function show($id)
@@ -76,9 +68,7 @@ class IngresoController extends Controller
     }
 
     public function update(UpdateTransactionRequest $request, $id)
-    {
-        // dd($request->request);
-        // $transaccion = $this->transaccionContableService->buscarTransaccion($id);
+    {        
         $transaccion = $this->transaccionContableService->buscarTransaccion($request->input('idIngreso'));
 
         if (!$transaccion) {
