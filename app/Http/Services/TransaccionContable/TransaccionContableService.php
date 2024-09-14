@@ -142,7 +142,7 @@ class TransaccionContableService
     }
 
     public function saldoInsuficiente()
-    {
+    {        
         return response(['message' => 'Saldo insuficiente'], 400);
     }
 

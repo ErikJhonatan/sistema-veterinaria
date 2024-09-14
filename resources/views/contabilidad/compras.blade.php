@@ -14,13 +14,13 @@
 @endphp
 
 @section('content_header')
-  <h1 class="m-0 text-dark"><i class="fas fa-fw fa-coins"></i> Ingresos (*VENTAS)</h1>
+  <h1 class="m-0 text-dark"><i class="fas fa-fw fa-shopping-cart"></i> Compras</h1>
 @stop
 
 @section('content')
   <div class="card card-primary">
     <div class="card-header">
-      <h3 class="card-title">Listado de Ingresos</h3>
+      <h3 class="card-title">Listado de Compras</h3>
     </div>
     <div class="card-body">
       @if (session('msg'))
@@ -37,7 +37,7 @@
       <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
         <div class="btn-group mr-2" role="group" aria-label="Third group">
           <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#ModalNew"
-            title="Nuevo Ingreso">Crear ingreso</button>
+            title="Nueva Compra">Registrar Compra</button>
         </div>
       </div>
 
@@ -56,7 +56,7 @@
             <tr>
               <td>{{ \Carbon\Carbon::parse($trans->created_at)->format('Y-m-d H:i:s') }}</td>
               <td>
-                Ingreso #{{ $ingreso_referencia }}
+                Compra #{{ $ingreso_referencia }}
               </td>
               <td>
                 {{ $trans->tipo_transaccion }}
@@ -67,7 +67,7 @@
               <td>
                 {{ Prices::symbol() }} {{ number_format($trans->monto, 2, ',', '') }}
               </td>
-              <td>                
+              <td>
                 <button type="button" class="btn btn-xs btn-default text-primary mx-1 shadow" data-toggle="modal"
                   data-target="#ModalEdit" title="Editar Categoria"
                   onclick="obtenerInfoEdi('{{ $trans->id }}', '{{ $trans->fecha }}', '{{ $trans->descripcion }}', '{{ $trans->monto }}')"><i
@@ -93,12 +93,12 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content">
             <div class="modal-header bg-warning">
-              <h5 class="modal-title" id="exampleModalCenterTitle">Crear Nuevo Ingreso</h5>
+              <h5 class="modal-title" id="exampleModalCenterTitle">Registrar Nueva Compra</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <form action="{{ url('ingresos') }}" method="post">
+            <form action="{{ url('compras') }}" method="post">
               @csrf
               <div class="modal-body">
                 {{-- Fecha --}}
@@ -113,18 +113,14 @@
                   </div>
                 </div>
 
-                {{-- Tipo de Ingreso --}}
+                {{-- Año --}}
                 <div class="form-group">
-                  <label class="form-label" for="tipo_ingreso">Tipo de Ingreso</label>
+                  <label class="form-label" for="anio">Año</label>
                   <div class="input-group mb-3">
                     <div class="input-group-prepend">
-                      <span class="input-group-text"><i class="fas fa-fw fa-credit-card"></i></span>
+                      <span class="input-group-text"><i class="fas fa-calendar"></i></span>
                     </div>
-                    <select class="form-control form-control-sm" id="tipo_ingreso" name="tipo_transaccion" required>
-                      <option value="" disabled selected>* Tipo de Ingreso...</option>
-                      <option value="ingreso_venta">Ingreso por venta</option>
-                      <option value="ingreso_servicio">Ingreso por servicio</option>
-                    </select>
+                    <input id="anio" type="text" class="form-control form-control-sm" name="anio" required>
                   </div>
                 </div>
 
@@ -188,20 +184,19 @@
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <form action="{{ url('ingresos/1') }}" method="post">
+            <form action="{{ url('compras/1') }}" method="post">
               @method('PUT')
               @csrf
               <div class="modal-body">
                 {{-- ID --}}
-
                 <div class="form-group">
-                  <label class="form-label" for="idIngreso">ID</label>
+                  <label class="form-label" for="idCompra">ID</label>
                   <div class="input-group mb-3">
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="fas fa-calendar-alt"></i>
                     </div>
-                    <input type="text" class="form-control form-control-sm" id="idIngreso" name="idIngreso"
-                      value="" placeholder="idIngreso" readonly>
+                    <input type="text" class="form-control form-control-sm" id="idCompra" name="idCompra"
+                      value="" placeholder="idCompra" readonly>
                   </div>
                 </div>
 
@@ -216,6 +211,9 @@
                       name="fecha" required value="{{ now()->format('Y-m-d\TH:i') }}">
                   </div>
                 </div>
+
+                {{-- Año (Campo Escondido) --}}
+                <input type="hidden" id="anioEdit" name="anio">
 
                 {{-- Monto --}}
                 <div class="form-group">
@@ -258,10 +256,14 @@
 @push('js')
   <script>
     function obtenerInfoEdi(id, fecha, descripcion, monto) {
-      $('#idIngreso').val(id);
+      $('#idCompra').val(id);
       $('#fecha').val(fecha);
       $('#conceptoEdit').val(descripcion);
-      $('#montoEdit').val(monto);      
+      $('#montoEdit').val(monto);
+      
+      const fechaObj = new Date(fecha);
+      const anio = fechaObj.getFullYear();
+      $('#anioEdit').val(anio);
     }
     $(document).ready(function() {
       $('.eliminar-venta').on('click', function() {
@@ -279,6 +281,12 @@
       $("#success-alert").fadeTo(2000, 500).slideUp(500, function() {
         $("#success-alert").slideUp(500);
       });
+    });
+
+    document.getElementById('fecha').addEventListener('change', function() {
+      const fecha = new Date(this.value);
+      const anio = fecha.getFullYear();
+      document.getElementById('anio').value = anio;
     });
   </script>
 

@@ -27,14 +27,15 @@ class CompraController extends Controller
 
     public function index(Request $request)
     {
-        $validatedData = $request->validate([
-            'anio' => 'required|integer|min:2024',
-        ]);
-        return $this->transaccionContableService->obtenerTransaccionesContables('compra', $validatedData['anio']);
+        // $validatedData = $request->validate([
+        //     'anio' => 'required|integer|min:2024',
+        // ]);
+        $transacciones = $this->transaccionContableService->obtenerTransaccionesContables('compra', 2024);
+        return view('contabilidad.compras', ['transacciones' => $transacciones]);
     }
 
     public function store(CompraStoreRequest $request)
-    {
+    {        
         $dataValitated = $request->validated();
         $dataValitated['tipo_transaccion'] = 'compra';
         $dataValitated['metodo_pago'] = $dataValitated['forma_pago'];
@@ -65,7 +66,8 @@ class CompraController extends Controller
             return $this->transaccionContableService->saldoInsuficiente();
         }
 
-        return $this->transaccionContableService->crearTransaccionContable($dataValitated);
+        $this->transaccionContableService->crearTransaccionContable($dataValitated);
+        return redirect()->route('compras.index')->with('msg', 'Compra registrada correctamente.');
     }
 
     public function show($id)
@@ -81,7 +83,7 @@ class CompraController extends Controller
 
     public function update(UpdateTransactionRequest $request, $id)
     {
-        $transaccion = $this->transaccionContableService->buscarTransaccion($id);
+        $transaccion = $this->transaccionContableService->buscarTransaccion($request->input('idCompra'));
 
         if (!$transaccion) {
             return $this->transaccionContableService->transaccionContableNoEncontrada();
@@ -104,7 +106,8 @@ class CompraController extends Controller
         {
             return $this->transaccionContableService->saldoInsuficiente();
         }
-        return $this->transaccionContableService->actualizarTransaccionContable($transaccion, $dataValitated);
+        $this->transaccionContableService->actualizarTransaccionContable($transaccion, $dataValitated);
+        return redirect()->route('compras.index')->with('msg', 'Compra actualizada correctamente.');
     }
 
     public function destroy($id)
@@ -115,6 +118,8 @@ class CompraController extends Controller
             return $this->transaccionContableService->transaccionContableNoEncontrada();
         }
 
-        return $this->transaccionContableService->eliminarTransaccionContable($transaccion);
+        $this->transaccionContableService->eliminarTransaccionContable($transaccion);
+
+        return redirect()->back()->with('msg', 'Compra eliminada correctamente.');
     }
 }
