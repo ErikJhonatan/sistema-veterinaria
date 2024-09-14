@@ -29,7 +29,7 @@ class GastoController extends Controller
         // $validatedData = $request->validate([
         //     'anio' => 'required|integer|min:2024',
         // ]);
-        $transacciones = $this->transaccionContableService->obtenerTransaccionesContables('gasto', 2024);
+        $transacciones = $this->transaccionContableService->obtenerTransaccionesContables('gasto', 2024);        
         return view('contabilidad.gastos', ['transacciones' => $transacciones]);
     }
 
