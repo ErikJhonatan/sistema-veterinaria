@@ -19,7 +19,7 @@ class IngresoController extends Controller
         $this->transaccionContableService = $transaccionContableService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
         // $validatedData = $request->validate([
         //     'anio' => 'required|integer|min:2024',
@@ -68,7 +68,7 @@ class IngresoController extends Controller
     }
 
     public function update(UpdateTransactionRequest $request, $id)
-    {        
+    {
         $transaccion = $this->transaccionContableService->buscarTransaccion($request->input('idIngreso'));
 
         if (!$transaccion) {
@@ -84,13 +84,10 @@ class IngresoController extends Controller
     public function destroy($id)
     {
         $transaccion = $this->transaccionContableService->buscarTransaccion($id);
-
         if (!$transaccion) {
             return $this->transaccionContableService->transaccionContableNoEncontrada();
         }
-
         $this->transaccionContableService->eliminarTransaccionContable($transaccion);
-
         return redirect()->back()->with('msg', 'Ingreso eliminado correctamente.');
     }
 }

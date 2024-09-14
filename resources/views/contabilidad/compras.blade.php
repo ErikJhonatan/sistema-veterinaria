@@ -1,9 +1,9 @@
 @extends('adminlte::page')
 
-@section('title', 'Consultorio veterinario SOS | Ingresos')
+@section('title', 'Consultorio veterinario SOS | Compras')
 
 @php
-  $heads = ['Fecha Registro', 'ID', 'Tipo', 'Concepto', 'Monto', 'Acciones'];
+  $heads = ['Fecha Registro', 'ID', 'Tipo', 'Método de Pago', 'Concepto', 'Monto', 'Acciones'];
   $config = [
       'language' => [
           'url' => '//cdn.datatables.net/plug-ins/2.0.1/i18n/es-ES.json',
@@ -60,6 +60,9 @@
               </td>
               <td>
                 {{ $trans->tipo_transaccion }}
+              </td>
+              <td>
+                {{ $trans->metodo_pago }}
               </td>
               <td>
                 {{ $trans->descripcion }}
