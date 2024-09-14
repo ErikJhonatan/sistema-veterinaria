@@ -139,6 +139,47 @@ class DynamicMenuMiddleware
                 ]
                 : []
             ),
+            // contabilidad
+            (                
+                in_array(PermisosValue::VENTA_VER_MODULO, $permisosUsuario) ?
+                [
+                    'text'    => 'Contabilidad',
+                    'icon'    => 'fas fa-fw fa-calculator',
+                    'submenu' => [
+                        [
+                            'text' => 'Ingresos',
+                            'icon' => 'fas fa-fw fa-coins',
+                            'url'  => 'ingresos',
+                        ],
+                        [
+                            'text' => 'Compras',
+                            'icon' => 'fas fa-fw fa-shopping-cart',
+                            'url'  => 'compras',
+                        ],
+                        [
+                            'text' => 'Gastos',
+                            'icon' => 'fas fa-fw fa-file-invoice-dollar',
+                            'url'  => 'gastos',
+                        ],
+                        [
+                            'text' => 'Capital',
+                            'icon' => 'fas fa-fw fa-hand-holding-usd',
+                            'url'  => 'capital',
+                        ],
+                        [
+                            'text' => 'Equipo',
+                            'icon' => 'fas fa-fw fa-tools',
+                            'url'  => 'equipo',
+                        ],
+                        [
+                            'text' => 'Reportes',
+                            'icon' => 'fas fa-fw fa-file-alt',
+                            'url'  => 'contabilidad/reportes',
+                        ],
+                    ]
+                ]
+                : []
+            ),
             // mascota
             (
                 in_array(PermisosValue::MASCOTA_VER_MODULO, $permisosUsuario) ?
