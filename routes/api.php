@@ -94,5 +94,6 @@ Route::prefix('permisos')->group(function () {
 });
 
 Route::prefix('contabilidad')->group(function () {
-    Route::apiResource('reporte-contabilidad', ReporteContabilidadController::class);
+    Route::get('reporte/estado-resultados', [ReporteContabilidadController::class, 'estadoResultados']);
+    Route::get('reporte/balance-general', [ReporteContabilidadController::class, 'balanceGeneral']);
 });
