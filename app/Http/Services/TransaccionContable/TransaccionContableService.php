@@ -83,7 +83,7 @@ class TransaccionContableService
             $transaccionContable->id,
             $registroCuentaCreditoLibroDiario->id
         );
-        return response(['data' => $transaccionContable, 'message' => 'Transaccion contable creada'], 201);
+        return $transaccionContable;
     }
 
     public function actualizarTransaccionContable($transaction, $data)
@@ -190,8 +190,8 @@ class TransaccionContableService
                return TransaccionContable::where('tipo_transaccion', 'gasto_personal')->orWhere('tipo_transaccion', 'gasto_servicio')->whereYear('fecha', $year)->get();
             case 'compra':
                return TransaccionContable::where('tipo_transaccion', 'compra')->whereYear('fecha', $year)->get();
-            case 'maquinaria':
-               return TransaccionContable::where('tipo_transaccion', 'maquinaria')->whereYear('fecha', $year)->get();
+            case 'equipo':
+               return TransaccionContable::where('tipo_transaccion', 'equipo')->whereYear('fecha', $year)->get();
             default:
                return TransaccionContable::whereYear('fecha', $year)->get();
        }
