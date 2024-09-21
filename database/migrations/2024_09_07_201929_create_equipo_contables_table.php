@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('equipo_contables', function (Blueprint $table) {
             $table->id();
             $table->foreignId('transaccion_id')->constrained('transaccion_contables')->onDelete('cascade');
+            $table->unsignedBigInteger('transaccion_depreciacion_id');
+            $table->foreign('transaccion_depreciacion_id')->references('id')->on('transaccion_contables');
             $table->string('nombre');
             $table->string('descripcion');
             $table->string('marca');
