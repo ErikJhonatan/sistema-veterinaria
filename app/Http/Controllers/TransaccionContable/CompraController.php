@@ -35,38 +35,38 @@ class CompraController extends Controller
     }
 
     public function store(CompraStoreRequest $request)
-    {        
-        $dataValitated = $request->validated();
-        $dataValitated['tipo_transaccion'] = 'compra';
-        $dataValitated['metodo_pago'] = $dataValitated['forma_pago'];
-        $dataValitated['descripcion'] = $dataValitated['concepto'];
+    {
+        $dataValidated = $request->validated();
+        $dataValidated['tipo_transaccion'] = 'compra';
+        $dataValidated['metodo_pago'] = $dataValidated['forma_pago'];
+        $dataValidated['descripcion'] = $dataValidated['concepto'];
 
-        $dataValitated['cuenta_debito_id'] = $this->transaccionContableService->buscarCuentaPorCodigo(
+        $dataValidated['cuenta_debito_id'] = $this->transaccionContableService->buscarCuentaPorCodigo(
             CuentaContable::MERCADERIA_MANUFACTURADA
         )->id;
 
-        if('efectivo' == $dataValitated['forma_pago'])
+        if('efectivo' == $dataValidated['forma_pago'])
         {
-            $dataValitated['cuenta_credito_id'] = $this->transaccionContableService->buscarCuentaPorCodigo(
+            $dataValidated['cuenta_credito_id'] = $this->transaccionContableService->buscarCuentaPorCodigo(
                 CuentaContable::CAJA
             )->id;
-            $saldo = $this->transaccionContableService->obtenerSaldoCaja($dataValitated['anio']);
+            $saldo = $this->transaccionContableService->obtenerSaldoCaja($dataValidated['anio']);
         }
 
-        else if('transferencia' == $dataValitated['forma_pago'])
+        else if('transferencia' == $dataValidated['forma_pago'])
         {
-            $dataValitated['cuenta_credito_id'] = $this->transaccionContableService->buscarCuentaPorCodigo(
+            $dataValidated['cuenta_credito_id'] = $this->transaccionContableService->buscarCuentaPorCodigo(
                 CuentaContable::BANCOS
             )->id;
-            $saldo = $this->transaccionContableService->obtenerSaldoBanco($dataValitated['anio']);
+            $saldo = $this->transaccionContableService->obtenerSaldoBanco($dataValidated['anio']);
         }
 
-        if($saldo < $dataValitated['monto'])
+        if($saldo < $dataValidated['monto'])
         {
             return $this->transaccionContableService->saldoInsuficiente();
         }
 
-        $this->transaccionContableService->crearTransaccionContable($dataValitated);
+        $this->transaccionContableService->crearTransaccionContable($dataValidated);
         return redirect()->route('compras.index')->with('msg', 'Compra registrada correctamente.');
     }
 
@@ -88,25 +88,25 @@ class CompraController extends Controller
         if (!$transaccion) {
             return $this->transaccionContableService->transaccionContableNoEncontrada();
         }
-        $dataValitated = $request->validated();
-        $dataValitated['descripcion'] = $dataValitated['concepto'];
+        $dataValidated = $request->validated();
+        $dataValidated['descripcion'] = $dataValidated['concepto'];
 
         $metodo_pago = $transaccion->metodo_pago;
 
         if('efectivo' == $metodo_pago)
         {
-            $saldo = $this->transaccionContableService->obtenerSaldoCaja($dataValitated['anio']);
+            $saldo = $this->transaccionContableService->obtenerSaldoCaja($dataValidated['anio']);
         }
         else if('transferencia' == $metodo_pago)
         {
-            $saldo = $this->transaccionContableService->obtenerSaldoBanco($dataValitated['anio']);
+            $saldo = $this->transaccionContableService->obtenerSaldoBanco($dataValidated['anio']);
         }
 
-        if(isset($dataValitated['monto']) && $saldo < $dataValitated['monto'])
+        if(isset($dataValidated['monto']) && $saldo < $dataValidated['monto'])
         {
             return $this->transaccionContableService->saldoInsuficiente();
         }
-        $this->transaccionContableService->actualizarTransaccionContable($transaccion, $dataValitated);
+        $this->transaccionContableService->actualizarTransaccionContable($transaccion, $dataValidated);
         return redirect()->route('compras.index')->with('msg', 'Compra actualizada correctamente.');
     }
 
