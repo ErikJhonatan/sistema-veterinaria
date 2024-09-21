@@ -11,17 +11,18 @@ class EquipoContable extends Model
 
     protected $fillable = [
         'transaccion_id',
+        'transaccion_depreciacion_id',
         'nombre',
         'descripcion',
         'marca',
         'modelo',
         'serie',
-        'placa',
         'anio',
+        'precio',
+        'metodo_pago',
         'color',
         'estado',
-        'tipo',
-        'vida_util',
+        'vida_util'
     ];
     public function transaccion()
     {

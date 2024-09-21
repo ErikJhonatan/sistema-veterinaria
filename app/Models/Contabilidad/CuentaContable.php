@@ -33,6 +33,10 @@ class CuentaContable extends Model
         'igv' => 6011,
     ];
 
+    const MAQUINARIAS_EQUIPOS_ADQ = 33311;
+    const DEPRECIACION_MAQUINARIAS_EQUIPOS = 6814;
+    const REEVALUACION_MAQUINARIAS_EQUIPOS = 33313;
+
     public function subCuentas()
     {
         return $this->hasMany(CuentaContable::class, 'cuenta_contable_id');
