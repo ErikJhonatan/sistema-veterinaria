@@ -3,7 +3,7 @@
 @section('title', 'Consultorio veterinario SOS | Capital')
 
 @php
-  $heads = ['Fecha Registro', 'ID', 'Tipo', 'Método de Pago' ,'Concepto', 'Monto', 'Acciones'];
+  $heads = ['Fecha Registro', 'ID', 'Tipo', 'Método de Pago', 'Concepto', 'Monto', 'Acciones'];
   $config = [
       'language' => [
           'url' => '//cdn.datatables.net/plug-ins/2.0.1/i18n/es-ES.json',
@@ -70,14 +70,14 @@
               <td>
                 {{ Prices::symbol() }} {{ number_format($trans->monto, 2, ',', '') }}
               </td>
-              <td>                
+              <td>
                 <button type="button" class="btn btn-xs btn-default text-primary mx-1 shadow" data-toggle="modal"
                   data-target="#ModalEdit" title="Editar Categoria"
                   onclick="obtenerInfoEdi('{{ $trans->id }}', '{{ $trans->fecha }}', '{{ $trans->descripcion }}', '{{ $trans->monto }}')"><i
                     class="fa fa-lg fa-fw fa-pen"></i></button>
                 <form action="{{ route('capital.destroy', $trans->id) }}" method="post" class="form">
-                  <button type="submit" class="eliminar-venta delete btn btn-xs btn-default text-danger mx-1 shadow"
-                    title="Eliminar venta {{ $ingreso_referencia }}" data-referencia="{{ $ingreso_referencia }}">
+                  <button type="submit" class="eliminar-capital delete btn btn-xs btn-default text-danger mx-1 shadow"
+                    title="Eliminar capital #{{ $ingreso_referencia }}" data-referencia="{{ $ingreso_referencia }}">
                     <i class="fa fa-lg fa-fw fa-trash"></i>
                   </button>
 
@@ -114,7 +114,7 @@
                     <input id="fecha" type="datetime-local" class="form-control form-control-sm" id="fecha"
                       name="fecha" required value="{{ now()->format('Y-m-d\TH:i') }}">
                   </div>
-                </div>                
+                </div>
 
                 {{-- Forma de Pago --}}
                 <div class="form-group">
@@ -179,7 +179,7 @@
             <form action="{{ url('capital/1') }}" method="post">
               @method('PUT')
               @csrf
-              <div class="modal-body">                
+              <div class="modal-body">
                 {{-- ID --}}
                 <div class="form-group">
                   <label class="form-label" for="idCapital">ID</label>
@@ -246,6 +246,7 @@
 @stop
 
 @push('js')
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
     function obtenerInfoEdi(id, fecha, descripcion, monto) {
       $('#idCapital').val(id);
@@ -258,12 +259,21 @@
       $('#anioEdit').val(anio);
     }
     $(document).ready(function() {
-      $('.eliminar-venta').on('click', function() {
+      $('.eliminar-capital').on('click', function() {
         let referencia = $(this).data('referencia');
 
-        if (confirm('Va a eliminar la venta ' + referencia + ', esta acción no se puede deshacer. ¿Continuar?')) {
-          return true;
-        }
+        Swal.fire({
+          title: '¿Está seguro?',
+          text: 'Va a eliminar el capital #' + referencia + ', esta acción no se puede deshacer. ¿Continuar?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, eliminar',
+          cancelButtonText: 'Cancelar'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            $(this).closest('form').submit();
+          }
+        });
 
         return false;
       });

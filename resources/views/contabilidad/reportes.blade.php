@@ -40,7 +40,7 @@
                 <option value="" disabled selected>* Tipo de Reporte...</option>
                 <option value="1">Estado de Resultado</option>
                 <option value="2">Balance General</option>
-                <option value="3">Estado de flujo de efectivo</option>
+                {{-- <option value="3">Estado de flujo de efectivo</option> --}}
               </select>
             </div>
           </div>
@@ -51,10 +51,10 @@
                 <span class="input-group-text"><i class="fas fa-fw fa-calendar"></i></span>
               </div>
               <input type="date" class="form-control form-control-sm" id="fecha_inicio" name="fecha_inicio"
-                value="{{ $currentYear }}-01-01" readonly>
+                value="{{ $currentYear }}-01-01" disabled>
             </div>
           </div>
-          <div class="form-group col-md-4">
+          {{-- <div class="form-group col-md-4">
             <label class="form-label" for="fecha_final">Fecha Final</label>
             <div class="input-group">
               <div class="input-group-prepend">
@@ -63,7 +63,18 @@
               <input type="date" class="form-control form-control-sm" id="fecha_final" name="fecha_final"
                 value="{{ old('fecha_final') }}" min="{{ $currentYear }}-01-01" max="{{ $currentYear }}-12-31" required>
             </div>
+          </div> --}}
+          <div class="form-group col-md-4">
+            <label class="form-label" for="fecha_final">Fecha Final</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fas fa-fw fa-calendar"></i></span>
+              </div>
+              <input type="date" class="form-control form-control-sm" id="fecha_final" name="fecha_final"
+                value="{{ $currentYear }}-12-31" disabled>
+            </div>
           </div>
+
         </div>
       </div>
 
@@ -85,10 +96,19 @@
 
 @push('js')
   <script>
-    $(document).ready(function() {});
+    $(document).ready(function() {
+      $('#tipo_reporte').change(function() {
+        var selectedOption = $(this).val();
+        var form = $(this).closest('form');
+
+        form.attr('method', 'get'); // Asegura que el método sea GET
+
+        if (selectedOption == '1') {
+          form.attr('action', '{{ url('api/contabilidad/reporte/estado-resultados') }}');
+        } else if (selectedOption == '2') {
+          form.attr('action', '{{ url('api/contabilidad/reporte/balance-general') }}');
+        }
+      });
+    });
   </script>
-
-  <style>
-
-  </style>
 @endpush

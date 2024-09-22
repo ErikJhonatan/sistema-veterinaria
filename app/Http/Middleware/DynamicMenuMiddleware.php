@@ -167,14 +167,19 @@ class DynamicMenuMiddleware
                             'url'  => 'capital',
                         ],
                         [
-                            'text' => 'Equipo',
+                            'text' => 'Equipos',
                             'icon' => 'fas fa-fw fa-tools',
-                            'url'  => 'equipo',
+                            'url'  => 'equipos',
                         ],
                         [
                             'text' => 'Reportes',
                             'icon' => 'fas fa-fw fa-file-alt',
-                            'url'  => 'contabilidad/reportes',
+                            'url'  => 'reportes',
+                        ],
+                        [
+                            'text' => 'Año Contable',
+                            'icon' => 'fas fa-fw fa-layer-group',
+                            'url'  => 'anio-contable',
                         ],
                     ]
                 ]

@@ -11,6 +11,10 @@ use App\Http\Controllers\Controller;
 
 class ReporteContabilidadController extends Controller
 {
+    public function index() {
+        return view('contabilidad.reportes');
+    }
+
     public function estadoResultados(){
         // Definir fechas de inicio y fin del ejercicio
         $fecha_inicio = '2024-01-01';
