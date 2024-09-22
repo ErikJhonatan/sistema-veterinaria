@@ -62,8 +62,8 @@ class GastoController extends Controller
             $saldo = $this->transaccionContableService->obtenerSaldoBanco($dataValitated['anio']);
         }
 
-        if ($saldo < $dataValitated['monto']) {
-            return $this->transaccionContableService->saldoInsuficiente();
+        if ($saldo < $dataValitated['monto']) {            
+            return redirect()->route('gastos.index')->with('error', 'Saldo insuficiente.');
         }
 
         $this->transaccionContableService->crearTransaccionContable($dataValitated);
@@ -105,7 +105,7 @@ class GastoController extends Controller
         }
 
         if ($saldo < $dataValitated['monto']) {
-            return $this->transaccionContableService->saldoInsuficiente();
+            return redirect()->route('gastos.index')->with('error', 'Saldo insuficiente.');
         }
 
         $this->transaccionContableService->actualizarTransaccionContable($transaccion, $dataValitated);

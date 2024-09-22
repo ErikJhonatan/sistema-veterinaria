@@ -57,8 +57,8 @@ class EquipoController extends Controller
         }
 
         if($saldo < $dataValidated['monto'])
-        {
-            return $this->transaccionContableService->saldoInsuficiente();
+        {            
+            return redirect()->route('equipos.index')->with('error', 'Saldo insuficiente.');
         }
 
 

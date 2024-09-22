@@ -26,11 +26,8 @@ class CompraController extends Controller
     }
 
     public function index(Request $request)
-    {
-        // $validatedData = $request->validate([
-        //     'anio' => 'required|integer|min:2024',
-        // ]);
-        $transacciones = $this->transaccionContableService->obtenerTransaccionesContables('compra', 2024);
+    {        
+        $transacciones = $this->transaccionContableService->obtenerTransaccionesContables('compra', date('Y'));
         return view('contabilidad.compras', ['transacciones' => $transacciones]);
     }
 
@@ -62,8 +59,8 @@ class CompraController extends Controller
         }
 
         if($saldo < $dataValidated['monto'])
-        {
-            return $this->transaccionContableService->saldoInsuficiente();
+        {            
+            return redirect()->route('compras.index')->with('error', 'Saldo insuficiente.');
         }
 
         $this->transaccionContableService->crearTransaccionContable($dataValidated);
@@ -103,8 +100,8 @@ class CompraController extends Controller
         }
 
         if(isset($dataValidated['monto']) && $saldo < $dataValidated['monto'])
-        {
-            return $this->transaccionContableService->saldoInsuficiente();
+        {            
+            return redirect()->route('compras.index')->with('error', 'Saldo insuficiente.');
         }
         $this->transaccionContableService->actualizarTransaccionContable($transaccion, $dataValidated);
         return redirect()->route('compras.index')->with('msg', 'Compra actualizada correctamente.');
