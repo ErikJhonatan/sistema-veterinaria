@@ -36,6 +36,13 @@
 @push('js')
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const anioContable = localStorage.getItem('anio-contable');
+      if (anioContable) {
+        document.getElementById('anio_contable').value = anioContable;
+      }});
+    </script>
+  <script>
     document.getElementById('guardar_anio').addEventListener('click', function() {
       const anioContable = document.getElementById('anio_contable').value;
       if (anioContable) {

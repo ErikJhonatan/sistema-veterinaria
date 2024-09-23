@@ -22,7 +22,7 @@ class GastoStoreRequest extends FormRequest
         return [
             // fecha antes de o igual a la fecha actual
             'anio' => 'required|integer|min:2024',
-            'tipo_transaccion' => 'required|string|in:gasto_personal,gasto_servicio',
+            'tipo_transaccion' => 'required|string|in:gasto_personal,gasto_servicio,gasto_impuesto',
             // servicio obligatorio si el tipo de transaccion es gasto_servicio
             'servicio' => 'required_if:tipo_transaccion,gasto_servicio|string|in:luz,agua,internet,alquiler,maquinaria,equipo',
             'fecha' => 'required|date|before_or_equal:now',

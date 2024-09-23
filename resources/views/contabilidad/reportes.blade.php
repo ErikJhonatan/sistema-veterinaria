@@ -40,6 +40,7 @@
                 <option value="" disabled selected>* Tipo de Reporte...</option>
                 <option value="1">Estado de Resultado</option>
                 <option value="2">Balance General</option>
+                <option value="3">Estado de Flujo de Efectivo</option>
                 {{-- <option value="3">Estado de flujo de efectivo</option> --}}
               </select>
             </div>
@@ -107,6 +108,8 @@
           form.attr('action', '{{ url('api/contabilidad/reporte/estado-resultados') }}');
         } else if (selectedOption == '2') {
           form.attr('action', '{{ url('api/contabilidad/reporte/balance-general') }}');
+        } else if (selectedOption == '3') {
+          form.attr('action', '{{ url('api/contabilidad/reporte/flujo-efectivo') }}');
         }
       });
     });
