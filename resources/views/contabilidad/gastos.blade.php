@@ -150,6 +150,7 @@
                       <option value="" disabled selected>* Tipo de Gasto...</option>
                       <option value="gasto_personal">Gasto Personal</option>
                       <option value="gasto_servicio">Gasto por servicio</option>
+                      <option value="gasto_impuesto">Gasto por impuesto</option>
                     </select>
                   </div>
                 </div>
@@ -348,7 +349,7 @@
       document.getElementById('anio').value = anio;
 
       $('#tipo_transaccion').on('change', function() {
-        if (this.value === 'gasto_personal') {
+        if (this.value === 'gasto_personal' || this.value === 'gasto_impuesto') {
           $('#servicio').prop('disabled', true).prop('required', false).val('');
         } else if (this.value === 'gasto_servicio') {
           $('#servicio').prop('disabled', false).prop('required', true);

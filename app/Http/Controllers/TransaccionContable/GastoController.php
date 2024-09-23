@@ -29,7 +29,7 @@ class GastoController extends Controller
         // $validatedData = $request->validate([
         //     'anio' => 'required|integer|min:2024',
         // ]);
-        $transacciones = $this->transaccionContableService->obtenerTransaccionesContables('gasto', 2024);        
+        $transacciones = $this->transaccionContableService->obtenerTransaccionesContables('gasto', 2024);
         return view('contabilidad.gastos', ['transacciones' => $transacciones]);
     }
 
@@ -47,6 +47,10 @@ class GastoController extends Controller
             $dataValitated['cuenta_debito_id'] = $this->transaccionContableService->buscarCuentaPorCodigo(
                 CuentaContable::CUENTAS_GASTOS_PERSONAL['sueldos']
             )->id;
+        } else if('gasto_impuesto' == $dataValitated['tipo_transaccion']) {
+            $dataValitated['cuenta_debito_id'] = $this->transaccionContableService->buscarCuentaPorCodigo(
+                CuentaContable::IMPUESTOS['igv']
+            )->id;
         }
         $saldo = 0;
 
@@ -61,8 +65,7 @@ class GastoController extends Controller
             )->id;
             $saldo = $this->transaccionContableService->obtenerSaldoBanco($dataValitated['anio']);
         }
-
-        if ($saldo < $dataValitated['monto']) {            
+        if ($saldo < $dataValitated['monto']) {
             return redirect()->route('gastos.index')->with('error', 'Saldo insuficiente.');
         }
 
@@ -103,7 +106,7 @@ class GastoController extends Controller
             )->id;
             $saldo = $this->transaccionContableService->obtenerSaldoBanco($dataValitated['anio']);
         }
-
+        $saldo += $transaccion->monto;
         if ($saldo < $dataValitated['monto']) {
             return redirect()->route('gastos.index')->with('error', 'Saldo insuficiente.');
         }
