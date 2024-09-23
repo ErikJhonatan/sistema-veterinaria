@@ -139,12 +139,7 @@ class TransaccionContableService
     public function transaccionContableNoEncontrada()
     {
         return response(['message' => 'Transaccion no encontrada'], 404);
-    }
-
-    public function saldoInsuficiente()
-    {
-        return response(['message' => 'Saldo insuficiente'], 400);
-    }
+    }    
 
     public function eliminarTransaccionContable($transaccionContable)
     {
