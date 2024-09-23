@@ -100,4 +100,5 @@ Route::prefix('contabilidad')->group(function () {
     Route::apiResource('equipo', EquipoController::class);
     Route::get('reporte/estado-resultados', [ReporteContabilidadController::class, 'estadoResultados']);
     Route::get('reporte/balance-general', [ReporteContabilidadController::class, 'balanceGeneral']);
+    Route::get('reporte/flujo-efectivo', [ReporteContabilidadController::class, 'flujoEfectivo']);
 });
