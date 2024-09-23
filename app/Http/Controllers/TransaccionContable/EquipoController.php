@@ -57,7 +57,7 @@ class EquipoController extends Controller
         }
 
         if($saldo < $dataValidated['monto'])
-        {            
+        {
             return redirect()->route('equipos.index')->with('error', 'Saldo insuficiente.');
         }
 
@@ -65,7 +65,7 @@ class EquipoController extends Controller
         $dataValidated['cuenta_debito_id'] = $cuentaDebito->id;
         $dataValidated['cuenta_credito_id'] = $cuentaCredito->id;
 
-        return $this->equipoService->registrarEquipo($request);
+        return $this->equipoService->registrarEquipo($dataValidated);
     }
 
     public function show($id)
@@ -77,16 +77,23 @@ class EquipoController extends Controller
     public function update(EquipoUpdateRequest $request, $id)
     {
         //
-        $dataValidated = $request->validated();
-        $transaccion = $this->transaccionContableService->buscarTransaccion($dataValidated['transaccion_id']);
         $equipo = $this->equipoService->buscarEquipo($id);
-        return $this->equipoService->actualizarEquipo($dataValidated, $transaccion, $equipo);
+        if(!$equipo){
+            return response(['message' => 'Equipo no encontrado'], 404);
+        }
+        $transaccionEquipo = $this->transaccionContableService->buscarTransaccion($equipo->transaccion_id);
+        $transaccionDepreciacion = $this->transaccionContableService->buscarTransaccion($equipo->transaccion_depreciacion_id);
+
+        return $this->equipoService->actualizarEquipo($equipo, $transaccionEquipo, $transaccionDepreciacion, $request);
     }
 
     public function destroy($id)
     {
         //
         $equipo = $this->equipoService->buscarEquipo($id);
-        return $this->equipoService->eliminarEquipo($equipo->transaccion_id);
+        if(!$equipo){
+            return response(['message' => 'Equipo no encontrado'], 404);
+        }
+        return $this->equipoService->eliminarEquipo($equipo);
     }
 }

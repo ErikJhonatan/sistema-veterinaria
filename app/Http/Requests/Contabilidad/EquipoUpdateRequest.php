@@ -22,14 +22,14 @@ class EquipoUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nombre' => 'string',
-            'marca' => 'string',
-            'modelo' => 'string',
-            'serie' => 'string',
-            'fecha_adquisicion' => 'date|before_or_equal:now',
-            'costo' => 'numeric|min:0.01',
-            'estado' => 'string|in:nuevo,usado',
-            'descripcion' => 'string'
+            'nombre' => 'required|string|min:3|max:255',
+            'marca' => 'required|string|min:3|max:255',
+            'modelo' => 'required|string|min:3|max:255',
+            'serie' => 'required|string|min:3|max:255',
+            'fecha_adquisicion' => 'required|date|before_or_equal:now',
+            'precio' => 'required|numeric|min:0.01',
+            'estado' => 'required|string|in:nuevo,usado',
+            'descripcion' => 'required|string|min:3|max:255'
         ];
     }
 }

@@ -33,10 +33,12 @@ class EquipoService
         $transaccionEquipo = $this->transaccionContableService->crearTransaccionContable(
             [
                 'concepto' => 'Compra de equipo ' . $dataValidated['nombre'],
-                'monto' => $dataValidated['costo'],
+                'descripcion' => 'Compra de equipo ' . $dataValidated['nombre'],
+                'monto' => $dataValidated['precio'],
                 'fecha' => $dataValidated['fecha_adquisicion'],
                 'tipo_transaccion' => 'compra_equipo',
                 'monto_total' => $dataValidated['precio'],
+                'metodo_pago' => $dataValidated['metodo_pago'],
                 'cuenta_debito_id' => $this->transaccionContableService->buscarCuentaPorCodigo(
                     CuentaContable::MAQUINARIAS_EQUIPOS_ADQ
                 )->id,
@@ -45,37 +47,40 @@ class EquipoService
                 )->id
             ]
         );
-
-        $transaccionDepreciacion = $this->transaccionContableService->crearTransaccionContable([
+        $fecha = Carbon::parse($dataValidated['fecha_adquisicion']);
+        $transaccionDepreciacion = TransaccionContable::create([
             'concepto' => 'Depreciacion de equipo ' . $dataValidated['nombre'],
-            'monto' => $dataValidated['precio'] / $dataValidated['vida_util'],
-            'fecha' => $dataValidated['fecha'],
+            'descripcion' => 'Depreciacion de equipo ' . $dataValidated['nombre'],
+            'monto' => $dataValidated['precio'],
+            'fecha' => $fecha->addYear($dataValidated['vida_util']),
             'tipo_transaccion' => 'depreciacion_equipo',
             'monto_total' => $dataValidated['precio'],
-            'cuenta_debito_id' =>  $this->transaccionContableService->buscarCuentaPorCodigo(
+            'metodo_pago' => $dataValidated['metodo_pago'],
+            'cuenta_debito_id' => $this->transaccionContableService->buscarCuentaPorCodigo(
                 CuentaContable::DEPRECIACION_MAQUINARIAS_EQUIPOS
             )->id,
             'cuenta_credito_id' => $this->transaccionContableService->buscarCuentaPorCodigo(
-                CuentaContable::REEVALUACION_MAQUINARIAS_EQUIPOS
-            )->id,
+                CuentaContable::MAQUINARIAS_EQUIPOS_ADQ
+            )->id
         ]);
-        $dataValidated['transaccion_contable_id'] = $transaccionEquipo->id;
+
+        $dataValidated['transaccion_id'] = $transaccionEquipo->id;
         $dataValidated['transaccion_depreciacion_id'] = $transaccionDepreciacion->id;
 
 
         $equipo = EquipoContable::create($dataValidated);
 
 
-        for($i = 0; $i < $dataValidated['vida_util']; $i++){
-            $fecha = Carbon::parse($dataValidated['fecha']);
+        for($i = 1; $i <= $dataValidated['vida_util']; $i++){
+            $fecha = Carbon::parse($dataValidated['fecha_adquisicion']);
             $dataDepreciacion = [
                 'fecha' => $fecha->addYear($i),
-                'monto' => $transaccionDepreciacion->monto,
-                'concepto' => $transaccionDepreciacion->concepto,
+                'monto' => $transaccionDepreciacion->monto / $dataValidated['vida_util'],
+                'concepto' => $transaccionDepreciacion->descripcion,
                 'cuenta_debito_id' => $transaccionDepreciacion->cuenta_debito_id,
                 'cuenta_credito_id' => $transaccionDepreciacion->cuenta_credito_id
             ];
-           $$this->registrarDepreciacionEquipo($dataDepreciacion, $transaccionDepreciacion, $dataValidated['vida_util']);
+           $this->registrarDepreciacionEquipo($dataDepreciacion, $transaccionDepreciacion, $dataValidated['vida_util']);
         }
         return $equipo;
     }
@@ -83,7 +88,7 @@ class EquipoService
 
     public function registrarDepreciacionEquipo($data, $transaccionContable, $vidaUtil)
     {
-        for($i = 0; $i < $vidaUtil; $i++){
+
 
         // libro diario
         $registroCuentaDebitoLibroDiario = $this->libroDiarioService->registrarLibroDiario(
@@ -126,7 +131,6 @@ class EquipoService
             $transaccionContable->id,
             $registroCuentaCreditoLibroDiario->id
         );
-        }
     }
 
     public function buscarEquipo($id)
@@ -134,55 +138,114 @@ class EquipoService
         return EquipoContable::find($id);
     }
 
-    public function actualizarEquipo($equipo, $transaccion, $data)
+    public function actualizarEquipo($equipo, $transaccionEquipo, $transaccionDepreaciacion, $data)
     {
-        $equipo->update($data);
+        $dataValidated = $data->validated();
+        $equipo->update($dataValidated);
 
-        $depreciaciones_libro_diario = LibroDiario::where('tipo_transaccion', 'depreciacion_equipo')
-            ->where('transaccion_id', $equipo->transaccion_contable_id)
+        $depreciaciones_libro_diario = LibroDiario::where('transaccion_contable_id', $transaccionDepreaciacion->id)
             ->get();
-        $depreciaciones_libro_mayor = LibroMayor::where('tipo_transaccion', 'depreciacion_equipo')
-            ->where('transaccion_id', $equipo->transaccion_contable_id)
+        $depreciaciones_libro_mayor = LibroMayor::where('transaccion_contable_id', $transaccionDepreaciacion->id)
             ->get();
 
-        foreach($depreciaciones_libro_diario as $depreciacion){
+        $transaccionEquipo = TransaccionContable::find($equipo->transaccion_id);
+        $transaccionDepreciacion = TransaccionContable::find($equipo->transaccion_depreciacion_id);
+
+        $actualizarEquipo = $transaccionEquipo->update(
+            [
+                'concepto' => 'Compra de equipo ' . $dataValidated['nombre'],
+                'descripcion' => 'Compra de equipo ' . $dataValidated['nombre'],
+                'monto' => $dataValidated['precio'],
+                'fecha' => $dataValidated['fecha_adquisicion'],
+                'monto_total' => $dataValidated['precio'],
+            ]
+        );
+        // debito
+        $cuentaDebitoRegistro = $this->libroDiarioService->actualizarLibroDiario(
+            $dataValidated['fecha_adquisicion'],
+            $dataValidated['precio'],
+            0,
+            'Compra de equipo ' . $dataValidated['nombre'],
+            $transaccionEquipo->cuenta_debito_id,
+            $transaccionEquipo->id,
+        );
+        $cuentaHaberRegistro = $this->libroDiarioService->actualizarLibroDiario(
+            $dataValidated['fecha_adquisicion'],
+            0,
+            $dataValidated['precio'],
+            'Compra de equipo ' . $dataValidated['nombre'],
+            $transaccionEquipo->cuenta_credito_id,
+            $transaccionEquipo->id,
+        );
+
+        $actualizarDepreciacion = $transaccionDepreaciacion->update(
+            [
+                'concepto' => 'Depreciacion de equipo ' . $dataValidated['nombre'],
+                'descripcion' => 'Depreciacion de equipo ' . $dataValidated['nombre'],
+                'monto' => $dataValidated['precio'],
+                'fecha' => $dataValidated['fecha_adquisicion'],
+                'monto_total' => $dataValidated['precio'],
+            ]
+        );
+
+        $actualizarDepreciacion = $this->actualizarLibrosDepreaciacion($equipo, $transaccionDepreciacion, $data, $depreciaciones_libro_diario, $depreciaciones_libro_mayor);
+
+        return $equipo;
+    }
+
+    public function actualizarLibrosDepreaciacion($equipo, $transaccion, $data, $registrosLibroDiario, $registrosLibroMayor)
+    {
+        $fechaLibroDiario =  Carbon::parse($data['fecha_adquisicion']);
+        $fechaLibroMayor = Carbon::parse($data['fecha_adquisicion']);
+        foreach($registrosLibroDiario as $indice => $depreciacion){
             // actualizar libro diario cuenta debito
-            if($depreciacion->cuenta_id === $transaccion->cuenta_debito_id){
+            $indice = $indice + 1;
+
+            if(!($indice%2 === 0)){
+                $fechaLibroDiario->addYear(1);
+            }
+
+            if($depreciacion->cuenta_contable_id === $transaccion->cuenta_debito_id){
                 $depreciacion->update([
-                    'fecha' => $data['fecha_compra'],
+                    'fecha' => $fechaLibroDiario,
                     'debe' => $equipo->precio / $equipo->vida_util,
                     'concepto' => 'Depreciacion de equipo ' . $equipo->nombre
                 ]);
             }
             // actualizar libro diario cuenta credito
-            else if($depreciacion->cuenta_id === $transaccion->cuenta_credito_id){
+            else if($depreciacion->cuenta_contable_id === $transaccion->cuenta_credito_id){
                 $depreciacion->update([
-                    'fecha' => $data['fecha_compra'],
+                    'fecha' => $fechaLibroDiario,
                     'haber' => $equipo->precio / $equipo->vida_util,
                     'concepto' => 'Depreciacion de equipo ' . $equipo->nombre
                 ]);
             }
         }
 
-        foreach($depreciaciones_libro_mayor as $depreciacion){
+        $fechaLibroMayor =  Carbon::parse($data['fecha_adquisicion']);
+        foreach($registrosLibroMayor as $indice => $depreciacion){
             // actualizar libro mayor cuenta debito
-            if($depreciacion->cuenta_id === $transaccion->cuenta_debito_id){
+            $indice = $indice + 1;
+            if(!($indice%2 === 0)){
+                $fechaLibroMayor->addYear(1);
+            }
+
+            if($depreciacion->cuenta_contable_id === $transaccion->cuenta_debito_id){
                 $depreciacion->update([
-                    'fecha' => $data['fecha_compra'],
+                    'fecha' => $fechaLibroMayor,
                     'debe' => $equipo->precio / $equipo->vida_util,
                     'saldo_deudor' => $equipo->precio / $equipo->vida_util
                 ]);
             }
             // actualizar libro mayor cuenta credito
-            else if($depreciacion->cuenta_id === $transaccion->cuenta_credito_id){
+            else if($depreciacion->cuenta_contable_id === $transaccion->cuenta_credito_id){
                 $depreciacion->update([
-                    'fecha' => $data['fecha_compra'],
+                    'fecha' => $fechaLibroMayor,
                     'haber' => $equipo->precio / $equipo->vida_util,
                     'saldo_acreedor' => $equipo->precio / $equipo->vida_util
                 ]);
             };
         }
-        return $equipo;
     }
 
 
@@ -191,14 +254,18 @@ class EquipoService
         return EquipoContable::whereYear('fecha_compra', $year)->get();
     }
 
-    public function eliminarEquipo($idTransaccion)
+    public function eliminarEquipo($equipo)
     {
-        $transaccion = TransaccionContable::find($idTransaccion);
+        $transaccionEquipo = TransaccionContable::find($equipo->transaccion_id);
+        $transaccionDepreciacion = TransaccionContable::find($equipo->transaccion_depreciacion_id);
 
-        if (!$transaccion) {
+
+        if (!$transaccionEquipo || !$transaccionDepreciacion) {
             return response(['message' => 'Transaccion no encontrada'], 404);
         }
-        $transaccion->delete();
+
+        $transaccionEquipo->delete();
+        $transaccionDepreciacion->delete();
         return response(['message' => 'Transaccion eliminada'], 200);
     }
 }
