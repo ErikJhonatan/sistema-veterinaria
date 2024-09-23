@@ -30,7 +30,7 @@ class CuentaContable extends Model
     ];
 
     const IMPUESTOS = [
-        'igv' => 6011,
+        'igv' => 6411,
     ];
 
     const MAQUINARIAS_EQUIPOS_ADQ = 33311;
