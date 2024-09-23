@@ -23,16 +23,16 @@ class EquipoStoreRequest extends FormRequest
     {
         return [
             'anio' => 'required|integer|min:2024',
-            'nombre' => 'required|string',
-            'marca' => 'required|string',
-            'modelo' => 'required|string',
-            'serie' => 'required|string',
+            'nombre' => 'required|string|min:3|max:255',
+            'marca' => 'required|string|min:3|max:255',
+            'modelo' => 'required|string|min:3|max:255',
+            'serie' => 'required|string|min:3|max:255',
             'metodo_pago' => 'required|string|in:efectivo,transferencia',
             'fecha_adquisicion' => 'required|date|before_or_equal:now',
-            'costo' => 'required|numeric|min:0.01',
+            'precio' => 'required|numeric|min:0.01',
             'vida_util' => 'required|integer|min:1',
             'estado' => 'required|string|in:nuevo,usado',
-            'descripcion' => 'required|string'
+            'descripcion' => 'required|string|min:3|max:255'
         ];
     }
 }
