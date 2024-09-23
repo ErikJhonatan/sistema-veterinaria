@@ -34,6 +34,17 @@
         </div>
       @endif
 
+      @if (session('error'))
+        <div class="row">
+          <div class="col-md-8"></div>
+          <div class="col-md-4">
+            <x-adminlte-alert theme="danger" id='error-alert' title="" dismissable>
+              {{ session('error') }}
+            </x-adminlte-alert>
+          </div>
+        </div>
+      @endif
+
       <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
         <div class="btn-group mr-2" role="group" aria-label="Third group">
           <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#ModalNew"
@@ -70,14 +81,14 @@
               <td>
                 {{ Prices::symbol() }} {{ number_format($trans->monto, 2, ',', '') }}
               </td>
-              <td>                
+              <td>
                 <button type="button" class="btn btn-xs btn-default text-primary mx-1 shadow" data-toggle="modal"
                   data-target="#ModalEdit" title="Editar Categoria"
                   onclick="obtenerInfoEdi('{{ $trans->id }}', '{{ $trans->fecha }}', '{{ $trans->descripcion }}', '{{ $trans->monto }}')"><i
                     class="fa fa-lg fa-fw fa-pen"></i></button>
                 <form action="{{ route('ingresos.destroy', $trans->id) }}" method="post" class="form">
-                  <button type="submit" class="eliminar-venta delete btn btn-xs btn-default text-danger mx-1 shadow"
-                    title="Eliminar venta {{ $ingreso_referencia }}" data-referencia="{{ $ingreso_referencia }}">
+                  <button type="submit" class="eliminar-gasto delete btn btn-xs btn-default text-danger mx-1 shadow"
+                    title="Eliminar gasto #{{ $ingreso_referencia }}" data-referencia="{{ $ingreso_referencia }}">
                     <i class="fa fa-lg fa-fw fa-trash"></i>
                   </button>
 
@@ -123,7 +134,8 @@
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="fas fa-calendar"></i></span>
                     </div>
-                    <input id="anio" type="text" class="form-control form-control-sm" name="anio" required readonly>
+                    <input id="anio" type="text" class="form-control form-control-sm" name="anio" required
+                      readonly>
                   </div>
                 </div>
 
@@ -156,7 +168,8 @@
                       <option value="internet">Internet</option>
                       <option value="alquiler">Alquiler</option>
                       <option value="maquinaria">Maquinaria</option>
-                      <option value="equipo">Equipo</option>                      
+                      <option value="equipo">Equipo</option>
+                      <option value="otros">Otros</option>
                     </select>
                   </div>
                 </div>
@@ -291,6 +304,7 @@
 @stop
 
 @push('js')
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
     function obtenerInfoEdi(id, fecha, descripcion, monto) {
       $('#idGasto').val(id);
@@ -298,26 +312,40 @@
       $('#conceptoEdit').val(descripcion);
       $('#montoEdit').val(monto);
 
-      const fechaObj = new Date(fecha);
-      const anio = fechaObj.getFullYear();
+      const anio = localStorage.getItem('anio-contable') || new Date().getFullYear();
       $('#anioEdit').val(anio);
     }
+
     $(document).ready(function() {
-      $('.eliminar-venta').on('click', function() {
+      $('.eliminar-gasto').on('click', function() {
         let referencia = $(this).data('referencia');
 
-        if (confirm('Va a eliminar la venta ' + referencia + ', esta acción no se puede deshacer. ¿Continuar?')) {
-          return true;
-        }
+        Swal.fire({
+          title: '¿Está seguro?',
+          text: 'Va a eliminar el gasto #' + referencia + ', esta acción no se puede deshacer. ¿Continuar?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, eliminar',
+          cancelButtonText: 'Cancelar'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            $(this).closest('form').submit();
+          }
+        });
 
         return false;
       });
+
       $('#ModalEdit').on('shown.bs.modal', function(e) {
         $('#Categoria').focus();
       });
+
       $("#success-alert").fadeTo(2000, 500).slideUp(500, function() {
         $("#success-alert").slideUp(500);
       });
+
+      const anio = localStorage.getItem('anio-contable') || new Date().getFullYear();
+      document.getElementById('anio').value = anio;
 
       $('#tipo_transaccion').on('change', function() {
         if (this.value === 'gasto_personal') {
@@ -329,8 +357,7 @@
     });
 
     document.getElementById('fecha').addEventListener('change', function() {
-      const fecha = new Date(this.value);
-      const anio = fecha.getFullYear();
+      const anio = localStorage.getItem('anio-contable') || new Date().getFullYear();
       document.getElementById('anio').value = anio;
     });
   </script>

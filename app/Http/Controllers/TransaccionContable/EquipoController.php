@@ -56,10 +56,11 @@ class EquipoController extends Controller
             return response(['message' => 'Metodo de pago no valido'], 400);
         }
 
-        // if($saldo < $dataValidated['precio'])
-        // {
-        //    return $this->transaccionContableService->saldoInsuficiente();
-        // }
+        if($saldo < $dataValidated['monto'])
+        {
+            return redirect()->route('equipos.index')->with('error', 'Saldo insuficiente.');
+        }
+
 
         $dataValidated['cuenta_debito_id'] = $cuentaDebito->id;
         $dataValidated['cuenta_credito_id'] = $cuentaCredito->id;
