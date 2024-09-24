@@ -19,12 +19,9 @@ class IngresoController extends Controller
         $this->transaccionContableService = $transaccionContableService;
     }
 
-    public function index(Request $request)
+    public function index()
     {
-        // $validatedData = $request->validate([
-        //     'anio' => 'required|integer|min:2024',
-        // ]);
-        $transacciones = $this->transaccionContableService->obtenerTransaccionesContables('ingreso', 2024);
+        $transacciones = $this->transaccionContableService->obtenerTransaccionesContables('ingreso', date('Y'));
         return view('contabilidad.ingresos', ['transacciones' => $transacciones]);
     }
 

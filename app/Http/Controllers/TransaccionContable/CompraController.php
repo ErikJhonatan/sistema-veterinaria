@@ -25,7 +25,7 @@ class CompraController extends Controller
         $this->libroMayorService = $libroMayorService;
     }
 
-    public function index(Request $request)
+    public function index()
     {
         $transacciones = $this->transaccionContableService->obtenerTransaccionesContables('compra', date('Y'));
         return view('contabilidad.compras', ['transacciones' => $transacciones]);

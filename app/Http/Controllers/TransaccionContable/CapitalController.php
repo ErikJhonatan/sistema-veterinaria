@@ -18,12 +18,9 @@ class CapitalController extends Controller
         $this->transaccionContableService = $transaccionContableService;
     }
 
-    public function index(Request $request)
+    public function index()
     {
-        // $validatedData = $request->validate([
-        //     'anio' => 'required|integer|min:2024',
-        // ]);
-        $transacciones = $this->transaccionContableService->obtenerTransaccionesContables('capital', 2024);
+        $transacciones = $this->transaccionContableService->obtenerTransaccionesContables('capital', date('Y'));
         return view('contabilidad.capital', ['transacciones' => $transacciones]);
     }
 

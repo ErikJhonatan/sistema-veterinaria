@@ -25,11 +25,8 @@ class GastoController extends Controller
     }
 
     public function index(Request $request)
-    {
-        // $validatedData = $request->validate([
-        //     'anio' => 'required|integer|min:2024',
-        // ]);
-        $transacciones = $this->transaccionContableService->obtenerTransaccionesContables('gasto', 2024);
+    {        
+        $transacciones = $this->transaccionContableService->obtenerTransaccionesContables('gasto', date('Y'));
         return view('contabilidad.gastos', ['transacciones' => $transacciones]);
     }
 

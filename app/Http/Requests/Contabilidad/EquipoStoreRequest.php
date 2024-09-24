@@ -32,7 +32,8 @@ class EquipoStoreRequest extends FormRequest
             'precio' => 'required|numeric|min:0.01',
             'vida_util' => 'required|integer|min:1',
             'estado' => 'required|string|in:nuevo,usado',
-            'descripcion' => 'required|string|min:3|max:255'
+            'descripcion' => 'required|string|min:3|max:255',
+            'color' => 'required|string'
         ];
     }
 }
