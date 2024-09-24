@@ -24,17 +24,15 @@ class EquipoController extends Controller
         $this->transaccionContableService = $transaccionContableService;
     }
 
-    public function index($data)
+    public function index()
     {
-        $dataValidate = $data->validate([
-                'year' => 'required|integer|min:2024'
-            ]);
-        return $this->equipoService->listarEquipos($dataValidate['year']);
+        $equipos = $this->equipoService->listarEquipos(date('Y'));
+        return view('contabilidad.equipos', ['transacciones' => $equipos]);
     }
 
     public function store(EquipoStoreRequest $request)
     {
-
+        dd($request);
         $dataValidated = $request->validated();
 
         $cuentaDebito = $this->transaccionContableService->buscarCuentaPorCodigo(
@@ -56,7 +54,7 @@ class EquipoController extends Controller
             return response(['message' => 'Metodo de pago no valido'], 400);
         }
 
-        if($saldo < $dataValidated['monto'])
+        if($saldo < $dataValidated['precio'])
         {
             return redirect()->route('equipos.index')->with('error', 'Saldo insuficiente.');
         }

@@ -251,7 +251,7 @@ class EquipoService
 
     public function listarEquipos($year)
     {
-        return EquipoContable::whereYear('fecha_compra', $year)->get();
+        return EquipoContable::whereYear('created_at', $year)->get();
     }
 
     public function eliminarEquipo($equipo)

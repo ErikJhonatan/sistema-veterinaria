@@ -54,7 +54,7 @@
 
       <hr>
 
-      {{-- <div class="row">
+      <div class="row">
         <x-adminlte-datatable id="example" :heads="$heads" head-theme="light" striped hoverable bordered compressed
           beautify with-buttons :config="$config">
           @foreach ($transacciones as $trans)
@@ -99,7 +99,7 @@
             </tr>
           @endforeach
         </x-adminlte-datatable>
-      </div> --}}
+      </div>
 
       <!-- Modal Create -->
       <div class="modal fade " id="ModalNew" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
@@ -112,7 +112,7 @@
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <form action="{{ url('productos') }}" method="post">
+            <form action="{{ url('equipos') }}" method="post">
               @csrf
               <div class="modal-body">
                 <div class="row">
@@ -189,14 +189,28 @@
                   {{-- Año de Fabricación --}}
                   <div class="col-md-6">
                     <div class="form-group">
-                      <label class="form-label" for="anio_fabricacion">Año de Fabricación</label>
+                      <label class="form-label" for="anio">Año de Fabricación</label>
                       <div class="input-group mb-3">
                         <div class="input-group-prepend">
                           <span class="input-group-text"><i class="fas fa-fw fa-calendar"></i></span>
                         </div>
-                        <input type="number" class="form-control form-control-sm" id="anio_fabricacion"
-                          name="anio_fabricacion" value="{{ old('anio_fabricacion') }}"
+                        <input type="number" class="form-control form-control-sm" id="anio"
+                          name="anio" value="{{ old('anio') }}"
                           placeholder="* Año de Fabricación" min="1000" max="9999" required>
+                      </div>
+                    </div>
+                  </div>
+
+                  {{-- Fecha Adquisición --}}
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="form-label" for="fecha_adquisicion">Fecha Adquisición</label>
+                      <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text"><i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <input type="datetime-local" class="form-control form-control-sm" id="fecha_adquisicion"
+                          name="fecha_adquisicion" required value="{{ now()->format('Y-m-d\TH:i') }}">
                       </div>
                     </div>
                   </div>
@@ -226,7 +240,7 @@
                         <select class="form-control form-control-sm" id="metodo_pago" name="metodo_pago" required>
                           <option value="" disabled selected>* Método de Pago...</option>
                           <option value="efectivo">Efectivo</option>
-                          <option value="tarjeta">Tarjeta</option>
+                          <option value="transferencia">Transferencia</option>
                         </select>
                       </div>
                     </div>
