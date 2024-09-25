@@ -32,7 +32,6 @@ class EquipoController extends Controller
 
     public function store(EquipoStoreRequest $request)
     {
-        dd($request);
         $dataValidated = $request->validated();
 
         $cuentaDebito = $this->transaccionContableService->buscarCuentaPorCodigo(
