@@ -15,10 +15,13 @@ class ReporteContabilidadController extends Controller
         return view('contabilidad.reportes');
     }
 
-    public function estadoResultados(){
+    public function estadoResultados(Request $request){
+        $anio = $request->validate([
+            'anio' => 'required|integer|min:2024'
+        ])['anio'];
         // Definir fechas de inicio y fin del ejercicio
-        $fecha_inicio = '2024-01-01';
-        $fecha_fin = '2024-12-31';
+        $fecha_inicio = $anio.'-01-01';
+        $fecha_fin = $anio.'-12-31';
 
         // Calcular sumas
         $cuentas_ingreso_venta = [$this->getIdCuenta(7011)];
@@ -121,10 +124,14 @@ class ReporteContabilidadController extends Controller
         $pdf->stream('estado_resultados.pdf');
     }
 
-    public function balanceGeneral()
+    public function balanceGeneral(Request $request)
     {
-        $fecha_inicio = '2024-01-01';
-        $fecha_fin = '2024-12-31';
+        $anio = $request->validate([
+            'anio' => 'required|integer|min:2024'
+        ])['anio'];
+        // Definir fechas de inicio y fin del ejercicio
+        $fecha_inicio = $anio.'-01-01';
+        $fecha_fin = $anio.'-12-31';
 
         $caja = $this->getIdCuenta(101);
         $banco = $this->getIdCuenta(1061);
@@ -312,10 +319,14 @@ class ReporteContabilidadController extends Controller
 
     }
 
-    public function flujoEfectivo()
+    public function flujoEfectivo(Request $request)
     {
-        $fecha_inicio = '2024-01-01';
-        $fecha_fin = '2024-12-31';
+        $anio = $request->validate([
+            'anio' => 'required|integer|min:2024'
+        ])['anio'];
+        // Definir fechas de inicio y fin del ejercicio
+        $fecha_inicio = $anio.'-01-01';
+        $fecha_fin = $anio.'-12-31';
         // items a considerar
         // flujo efectivo de operaciones
         // Datos:
@@ -494,7 +505,7 @@ class ReporteContabilidadController extends Controller
                     </tr>
                 </tbody>
             </table>
-            
+
         ');
         $pdf->setPaper('A4', 'landscape');
         $pdf->render();
