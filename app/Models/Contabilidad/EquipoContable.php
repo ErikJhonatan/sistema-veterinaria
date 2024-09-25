@@ -17,7 +17,6 @@ class EquipoContable extends Model
         'marca',
         'modelo',
         'serie',
-        'anio',
         'precio',
         'metodo_pago',
         'color',
