@@ -14,7 +14,7 @@
     <div class="card-header">
       <h3 class="card-title">Generar Reporte</h3>
     </div>
-    <form action="{{ url('contabilidad/reportes') }}" method="post">
+    <form id="reporteForm" action="{{ url('contabilidad/reportes') }}" method="post">
       @csrf
       <div class="card-body">
         @if ($errors->any())
@@ -40,7 +40,7 @@
                 <option value="" disabled selected>* Tipo de Reporte...</option>
                 <option value="1">Estado de Resultado</option>
                 <option value="2">Balance General</option>
-                <option value="3">Estado de Flujo de Efectivo</option>                
+                <option value="3">Estado de Flujo de Efectivo</option>
               </select>
             </div>
           </div>
@@ -54,16 +54,6 @@
                 value="{{ $currentYear }}-01-01" disabled>
             </div>
           </div>
-          {{-- <div class="form-group col-md-4">
-            <label class="form-label" for="fecha_final">Fecha Final</label>
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text"><i class="fas fa-fw fa-calendar"></i></span>
-              </div>
-              <input type="date" class="form-control form-control-sm" id="fecha_final" name="fecha_final"
-                value="{{ old('fecha_final') }}" min="{{ $currentYear }}-01-01" max="{{ $currentYear }}-12-31" required>
-            </div>
-          </div> --}}
           <div class="form-group col-md-4">
             <label class="form-label" for="fecha_final">Fecha Final</label>
             <div class="input-group">
@@ -74,7 +64,7 @@
                 value="{{ $currentYear }}-12-31" disabled>
             </div>
           </div>
-
+          <input type="hidden" id="anio" name="anio">
         </div>
       </div>
 
@@ -97,11 +87,18 @@
 @push('js')
   <script>
     $(document).ready(function() {
+      var anioContable = localStorage.getItem('anio-contable');
+      if (anioContable) {
+        $('#anio').val(anioContable);
+        $('#fecha_inicio').val(anioContable + '-01-01');
+        $('#fecha_final').val(anioContable + '-12-31');
+      }
+
       $('#tipo_reporte').change(function() {
         var selectedOption = $(this).val();
         var form = $(this).closest('form');
 
-        form.attr('method', 'get'); // Asegura que el método sea GET
+        form.attr('method', 'get');
 
         if (selectedOption == '1') {
           form.attr('action', '{{ url('api/contabilidad/reporte/estado-resultados') }}');
@@ -109,6 +106,12 @@
           form.attr('action', '{{ url('api/contabilidad/reporte/balance-general') }}');
         } else if (selectedOption == '3') {
           form.attr('action', '{{ url('api/contabilidad/reporte/flujo-efectivo') }}');
+        }
+      });
+
+      $('#reporteForm').submit(function() {
+        if (anioContable) {
+          $('#anio').val(anioContable);
         }
       });
     });

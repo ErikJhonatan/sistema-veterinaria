@@ -22,7 +22,7 @@ class EquipoStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'anio' => 'required|integer|min:2024',
+            'anio' => 'required|integer|min:2024',            
             'nombre' => 'required|string|min:3|max:255',
             'marca' => 'required|string|min:3|max:255',
             'modelo' => 'required|string|min:3|max:255',
@@ -33,7 +33,7 @@ class EquipoStoreRequest extends FormRequest
             'vida_util' => 'required|integer|min:1',
             'estado' => 'required|string|in:nuevo,usado',
             'descripcion' => 'required|string|min:3|max:255',
-            'color' => 'required|string'
+            'color' => 'required|string|min:3|max:255',
         ];
     }
 }

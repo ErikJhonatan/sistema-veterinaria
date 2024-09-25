@@ -61,36 +61,37 @@ class EquipoController extends Controller
 
         $dataValidated['cuenta_debito_id'] = $cuentaDebito->id;
         $dataValidated['cuenta_credito_id'] = $cuentaCredito->id;
-
-        return $this->equipoService->registrarEquipo($dataValidated);
+    
+        $this->equipoService->registrarEquipo($dataValidated);
+        return redirect()->route('equipos.index')->with('msg', 'Equipo registrado correctamente.');        
     }
 
     public function show($id)
-    {
-        //
+    {        
         return $this->equipoService->buscarEquipo($id);
     }
 
-    public function update(EquipoUpdateRequest $request, $id)
+    public function update(EquipoUpdateRequest $request)
     {
-        //
-        $equipo = $this->equipoService->buscarEquipo($id);
+        $equipo = $this->equipoService->buscarEquipo($request->input('idEquipo'));
+
         if(!$equipo){
             return response(['message' => 'Equipo no encontrado'], 404);
         }
         $transaccionEquipo = $this->transaccionContableService->buscarTransaccion($equipo->transaccion_id);
         $transaccionDepreciacion = $this->transaccionContableService->buscarTransaccion($equipo->transaccion_depreciacion_id);
 
-        return $this->equipoService->actualizarEquipo($equipo, $transaccionEquipo, $transaccionDepreciacion, $request);
+        $this->equipoService->actualizarEquipo($equipo, $transaccionEquipo, $transaccionDepreciacion, $request);
+        return redirect()->route('equipos.index')->with('msg', 'Equipo actualizado correctamente.');
     }
 
     public function destroy($id)
-    {
-        //
+    {        
         $equipo = $this->equipoService->buscarEquipo($id);
         if(!$equipo){
             return response(['message' => 'Equipo no encontrado'], 404);
         }
-        return $this->equipoService->eliminarEquipo($equipo);
+        $this->equipoService->eliminarEquipo($equipo);
+        return redirect()->back()->with('msg', 'Equipo eliminado correctamente.');
     }
 }

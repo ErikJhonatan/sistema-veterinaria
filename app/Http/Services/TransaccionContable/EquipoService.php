@@ -48,11 +48,12 @@ class EquipoService
             ]
         );
         $fecha = Carbon::parse($dataValidated['fecha_adquisicion']);
+        $vidaUtil = (int) $dataValidated['vida_util'];
         $transaccionDepreciacion = TransaccionContable::create([
             'concepto' => 'Depreciacion de equipo ' . $dataValidated['nombre'],
             'descripcion' => 'Depreciacion de equipo ' . $dataValidated['nombre'],
             'monto' => $dataValidated['precio'],
-            'fecha' => $fecha->addYear($dataValidated['vida_util']),
+            'fecha' => $fecha->addYear($vidaUtil),
             'tipo_transaccion' => 'depreciacion_equipo',
             'monto_total' => $dataValidated['precio'],
             'metodo_pago' => $dataValidated['metodo_pago'],
