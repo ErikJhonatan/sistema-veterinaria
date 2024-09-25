@@ -27,4 +27,11 @@ class EquipoContable extends Model
     {
         return $this->belongsTo(TransaccionContable::class);
     }
+
+    public function toArray()
+    {
+        $array = parent::toArray();
+        $array['fecha'] = $this->transaccion->fecha;
+        return $array;
+    }
 }
