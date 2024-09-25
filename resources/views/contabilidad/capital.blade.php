@@ -34,6 +34,17 @@
         </div>
       @endif
 
+      @if (session('error'))
+        <div class="row">
+          <div class="col-md-8"></div>
+          <div class="col-md-4">
+            <x-adminlte-alert theme="danger" id='error-alert' title="" dismissable>
+              {{ session('error') }}
+            </x-adminlte-alert>
+          </div>
+        </div>
+      @endif
+
       <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
         <div class="btn-group mr-2" role="group" aria-label="Third group">
           <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#ModalNew"
@@ -54,7 +65,7 @@
             @endphp
 
             <tr>
-              <td>{{ \Carbon\Carbon::parse($trans->created_at)->format('Y-m-d H:i:s') }}</td>
+              <td>{{ $trans->fecha }}</td>
               <td>
                 Capital #{{ $ingreso_referencia }}
               </td>
@@ -73,7 +84,7 @@
               <td>
                 <button type="button" class="btn btn-xs btn-default text-primary mx-1 shadow" data-toggle="modal"
                   data-target="#ModalEdit" title="Editar Categoria"
-                  onclick="obtenerInfoEdi('{{ $trans->id }}', '{{ $trans->fecha }}', '{{ $trans->descripcion }}', '{{ $trans->monto }}')"><i
+                  onclick="obtenerInfoEdi('{{ $trans->id }}', '{{ \Carbon\Carbon::parse($trans->created_at)->format('Y-m-d') }}', '{{ $trans->descripcion }}', '{{ $trans->monto }}')"><i
                     class="fa fa-lg fa-fw fa-pen"></i></button>
                 <form action="{{ route('capital.destroy', $trans->id) }}" method="post" class="form">
                   <button type="submit" class="eliminar-capital delete btn btn-xs btn-default text-danger mx-1 shadow"
@@ -111,8 +122,8 @@
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="fas fa-calendar-alt"></i>
                     </div>
-                    <input id="fecha" type="datetime-local" class="form-control form-control-sm" id="fecha"
-                      name="fecha" required value="{{ now()->format('Y-m-d\TH:i') }}">
+                    <input type="date" class="form-control form-control-sm" id="fecha" name="fecha" required
+                      max="{{ date('Y-m-d') }}" value="{{ now()->format('Y-m-d') }}">
                   </div>
                 </div>
 
@@ -176,7 +187,7 @@
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <form action="{{ url('capital/1') }}" method="post">
+            <form action="{{ url('capital/1') }}" method="post" id="formEditCapital">
               @method('PUT')
               @csrf
               <div class="modal-body">
@@ -199,8 +210,8 @@
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="fas fa-calendar-alt"></i>
                     </div>
-                    <input id="fecha" type="datetime-local" class="form-control form-control-sm" id="fecha"
-                      name="fecha" required value="{{ now()->format('Y-m-d\TH:i') }}">
+                    <input type="date" class="form-control form-control-sm" id="fechaEdit" name="fecha" required
+                      max="{{ date('Y-m-d') }}">
                   </div>
                 </div>
 
@@ -250,14 +261,14 @@
   <script>
     function obtenerInfoEdi(id, fecha, descripcion, monto) {
       $('#idCapital').val(id);
-      $('#fecha').val(fecha);
       $('#conceptoEdit').val(descripcion);
       $('#montoEdit').val(monto);
+      $('#fechaEdit').val(fecha);
 
-      const fechaObj = new Date(fecha);
-      const anio = fechaObj.getFullYear();
+      const anio = localStorage.getItem('anio-contable') || new Date().getFullYear();
       $('#anioEdit').val(anio);
     }
+
     $(document).ready(function() {
       $('.eliminar-capital').on('click', function() {
         let referencia = $(this).data('referencia');
@@ -277,11 +288,45 @@
 
         return false;
       });
+
       $('#ModalEdit').on('shown.bs.modal', function(e) {
         $('#Categoria').focus();
       });
+
       $("#success-alert").fadeTo(2000, 500).slideUp(500, function() {
         $("#success-alert").slideUp(500);
+      });
+
+      function validateYear(input) {
+        if (input.length === 4) {
+          const selectedYear = parseInt(input);
+          const anioContable = parseInt(localStorage.getItem('anio-contable'));
+
+          if (selectedYear !== anioContable) {
+            Swal.fire('Error', 'No puede registrar una compra en un año distinto al año contable seleccionado.',
+              'error');
+            return false;
+          }
+        }
+        return true;
+      }
+
+      $('#fecha').on('change', function() {
+        const selectedDate = new Date($(this).val());
+        const selectedYear = selectedDate.getFullYear().toString();
+
+        if (!validateYear(selectedYear)) {
+          $(this).val('');
+        }
+      });
+
+      $('#fechaEdit').on('change', function() {
+        const selectedDate = new Date($(this).val());
+        const selectedYear = selectedDate.getFullYear().toString();
+
+        if (!validateYear(selectedYear)) {
+          $(this).val('');
+        }
       });
     });
   </script>

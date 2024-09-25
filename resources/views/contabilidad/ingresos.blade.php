@@ -54,7 +54,8 @@
             @endphp
 
             <tr>
-              <td>{{ \Carbon\Carbon::parse($trans->created_at)->format('Y-m-d H:i:s') }}</td>
+              {{-- <td>{{ \Carbon\Carbon::parse($trans->created_at)->format('Y-m-d H:i:s') }}</td> --}}
+              <td>{{ $trans->fecha }}</td>
               <td>
                 Ingreso #{{ $ingreso_referencia }}
               </td>
@@ -73,8 +74,9 @@
               <td>
                 <button type="button" class="btn btn-xs btn-default text-primary mx-1 shadow" data-toggle="modal"
                   data-target="#ModalEdit" title="Editar Categoria"
-                  onclick="obtenerInfoEdi('{{ $trans->id }}', '{{ $trans->fecha }}', '{{ $trans->descripcion }}', '{{ $trans->monto }}')"><i
-                    class="fa fa-lg fa-fw fa-pen"></i></button>
+                  onclick="obtenerInfoEdi('{{ $trans->id }}', '{{ $trans->fecha }}', '{{ $trans->descripcion }}', '{{ $trans->monto }}')">
+                  <i class="fa fa-lg fa-fw fa-pen"></i>
+                </button>
                 <form action="{{ route('ingresos.destroy', $trans->id) }}" method="post" class="form">
                   <button type="submit" class="eliminar-ingreso delete btn btn-xs btn-default text-danger mx-1 shadow"
                     title="Eliminar ingreso #{{ $ingreso_referencia }}" data-referencia="{{ $ingreso_referencia }}">
@@ -111,8 +113,8 @@
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="fas fa-calendar-alt"></i>
                     </div>
-                    <input id="fecha" type="datetime-local" class="form-control form-control-sm" id="fecha"
-                      name="fecha" required value="{{ now()->format('Y-m-d\TH:i') }}">
+                    <input type="date" class="form-control form-control-sm" id="fecha" name="fecha"
+                      max="{{ date('Y-m-d') }}" value="{{ now()->format('Y-m-d') }}" required>
                   </div>
                 </div>
 
@@ -191,7 +193,7 @@
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <form action="{{ url('ingresos/1') }}" method="post">
+            <form action="{{ url('ingresos/1') }}" method="post" id="formEditIngreso">
               @method('PUT')
               @csrf
               <div class="modal-body">
@@ -203,7 +205,7 @@
                       <span class="input-group-text"><i class="fas fa-calendar-alt"></i>
                     </div>
                     <input type="text" class="form-control form-control-sm" id="idIngreso" name="idIngreso"
-                      value="" placeholder="idIngreso" readonly>
+                      readonly>
                   </div>
                 </div>
 
@@ -214,8 +216,8 @@
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="fas fa-calendar-alt"></i>
                     </div>
-                    <input id="fecha" type="datetime-local" class="form-control form-control-sm" id="fecha"
-                      name="fecha" required value="{{ now()->format('Y-m-d\TH:i') }}">
+                    <input type="date" class="form-control form-control-sm" id="fechaEdit" name="fecha"
+                      max="{{ date('Y-m-d') }}" required>
                   </div>
                 </div>
 
@@ -265,14 +267,14 @@
   <script>
     function obtenerInfoEdi(id, fecha, descripcion, monto) {
       $('#idIngreso').val(id);
-      $('#fecha').val(fecha);
       $('#conceptoEdit').val(descripcion);
       $('#montoEdit').val(monto);
+      $('#fechaEdit').val(fecha);
 
-      const fechaObj = new Date(fecha);
-      const anio = fechaObj.getFullYear();
+      const anio = localStorage.getItem('anio-contable') || new Date().getFullYear();
       $('#anioEdit').val(anio);
     }
+
     $(document).ready(function() {
       $('.eliminar-ingreso').on('click', function() {
         let referencia = $(this).data('referencia');
@@ -292,11 +294,45 @@
 
         return false;
       });
+
       $('#ModalEdit').on('shown.bs.modal', function(e) {
         $('#Categoria').focus();
       });
+
       $("#success-alert").fadeTo(2000, 500).slideUp(500, function() {
         $("#success-alert").slideUp(500);
+      });
+
+      function validateYear(input) {
+        if (input.length === 4) {
+          const selectedYear = parseInt(input);
+          const anioContable = parseInt(localStorage.getItem('anio-contable'));
+
+          if (selectedYear !== anioContable) {
+            Swal.fire('Error', 'No puede registrar una compra en un año distinto al año contable seleccionado.',
+              'error');
+            return false;
+          }
+        }
+        return true;
+      }
+
+      $('#fecha').on('change', function() {
+        const selectedDate = new Date($(this).val());
+        const selectedYear = selectedDate.getFullYear().toString();
+
+        if (!validateYear(selectedYear)) {
+          $(this).val('');
+        }
+      });
+
+      $('#fechaEdit').on('change', function() {
+        const selectedDate = new Date($(this).val());
+        const selectedYear = selectedDate.getFullYear().toString();
+
+        if (!validateYear(selectedYear)) {
+          $(this).val('');
+        }
       });
     });
   </script>

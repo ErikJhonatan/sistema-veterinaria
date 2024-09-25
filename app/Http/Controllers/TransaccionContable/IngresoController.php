@@ -19,9 +19,10 @@ class IngresoController extends Controller
         $this->transaccionContableService = $transaccionContableService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $transacciones = $this->transaccionContableService->obtenerTransaccionesContables('ingreso', date('Y'));
+        $anio = $request->input('anio', date('Y'));
+        $transacciones = $this->transaccionContableService->obtenerTransaccionesContables('ingreso', $anio);
         return view('contabilidad.ingresos', ['transacciones' => $transacciones]);
     }
 
@@ -65,7 +66,7 @@ class IngresoController extends Controller
         return $transaccionContable;
     }
 
-    public function update(UpdateTransactionRequest $request, $id)
+    public function update(UpdateTransactionRequest $request)
     {
         $transaccion = $this->transaccionContableService->buscarTransaccion($request->input('idIngreso'));
 

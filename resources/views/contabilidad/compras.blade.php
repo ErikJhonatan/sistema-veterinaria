@@ -33,7 +33,7 @@
           </div>
         </div>
       @endif
-      
+
       @if (session('error'))
         <div class="row">
           <div class="col-md-8"></div>
@@ -65,7 +65,7 @@
             @endphp
 
             <tr>
-              <td>{{ \Carbon\Carbon::parse($trans->created_at)->format('Y-m-d H:i:s') }}</td>
+              <td>{{ $trans->fecha }}</td>
               <td>
                 Compra #{{ $ingreso_referencia }}
               </td>
@@ -122,8 +122,8 @@
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="fas fa-calendar-alt"></i>
                     </div>
-                    <input id="fecha" type="datetime-local" class="form-control form-control-sm" id="fecha"
-                      name="fecha" required value="{{ now()->format('Y-m-d\TH:i') }}">
+                    <input type="date" class="form-control form-control-sm" id="fecha" name="fecha" required
+                      max="{{ date('Y-m-d') }}" value="{{ now()->format('Y-m-d') }}">
                   </div>
                 </div>
 
@@ -134,7 +134,8 @@
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="fas fa-calendar"></i></span>
                     </div>
-                    <input id="anio" type="text" class="form-control form-control-sm" name="anio" required readonly>
+                    <input id="anio" type="text" class="form-control form-control-sm" name="anio" required
+                      readonly>
                   </div>
                 </div>
 
@@ -221,8 +222,8 @@
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="fas fa-calendar-alt"></i>
                     </div>
-                    <input id="fecha" type="datetime-local" class="form-control form-control-sm" id="fecha"
-                      name="fecha" required value="{{ now()->format('Y-m-d\TH:i') }}">
+                    <input type="date" class="form-control form-control-sm" id="fechaEdit" name="fecha" required
+                      max="{{ date('Y-m-d') }}">
                   </div>
                 </div>
 
@@ -272,11 +273,11 @@
   <script>
     function obtenerInfoEdi(id, fecha, descripcion, monto) {
       $('#idCompra').val(id);
-      $('#fecha').val(fecha);
       $('#conceptoEdit').val(descripcion);
       $('#montoEdit').val(monto);
-      
-      const anio = localStorage.getItem('anio-contable');
+      $('#fechaEdit').val(fecha);
+
+      const anio = localStorage.getItem('anio-contable') || new Date().getFullYear();
       $('#anioEdit').val(anio);
     }
 
@@ -310,11 +311,38 @@
 
       const anio = localStorage.getItem('anio-contable') || new Date().getFullYear();
       document.getElementById('anio').value = anio;
-    });
 
-    document.getElementById('fecha').addEventListener('change', function() {
-      const anio = localStorage.getItem('anio-contable');
-      document.getElementById('anio').value = anio;
+      function validateYear(input) {
+        if (input.length === 4) {
+          const selectedYear = parseInt(input);
+          const anioContable = parseInt(localStorage.getItem('anio-contable'));
+
+          if (selectedYear !== anioContable) {
+            Swal.fire('Error', 'No puede registrar una compra en un año distinto al año contable seleccionado.',
+              'error');
+            return false;
+          }
+        }
+        return true;
+      }
+
+      $('#fecha').on('change', function() {
+        const selectedDate = new Date($(this).val());
+        const selectedYear = selectedDate.getFullYear().toString();
+
+        if (!validateYear(selectedYear)) {
+          $(this).val('');
+        }
+      });
+
+      $('#fechaEdit').on('change', function() {
+        const selectedDate = new Date($(this).val());
+        const selectedYear = selectedDate.getFullYear().toString();
+
+        if (!validateYear(selectedYear)) {
+          $(this).val('');
+        }
+      });
     });
   </script>
 
